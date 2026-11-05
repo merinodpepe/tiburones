@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12222A">
+<title>Pepe Flock: Tiburones</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/icon.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,600..900&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kick">Pepe Flock</div>
+    <h1>Tiburones</h1>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+    <div class="prog"><span id="pc"></span><span>34 familias · 9 órdenes</span></div>
+  </header>
+  <main>
+    <section id="v-plan"></section>
+    <section id="v-clave" hidden></section>
+    <section id="v-explorar" hidden></section>
+    <section id="v-estudiar" hidden></section>
+  </main>
+</div>
+<nav id="tabs" aria-label="Secciones">
+  <button data-v="plan">Plan</button>
+  <button data-v="clave">Clave</button>
+  <button data-v="explorar">Explorar</button>
+  <button data-v="estudiar">Estudiar</button>
+</nav>
+<script src="js/data.js"></script>
+<script src="js/sil.js"></script>
+<script src="js/app.js"></script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>

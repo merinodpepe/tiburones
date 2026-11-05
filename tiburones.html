@@ -1,0 +1,489 @@
+<title>Pepe Flock: Tiburones</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,600..900&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Concepto: lámina de naturalista. Gris pizarra azulado, rótulos condensados de museo, dorado solo para espinas y etiquetas.
+   Cada orden tiene su color: el árbol se aprende por color antes que por nombre. */
+:root{
+  --bg:#E7EDEF; --card:#F5F8F9; --ink:#12222A; --mute:#496069; --line:#C3D1D6;
+  --gild:#7A5A06; --ok:#1B6E45; --bad:#A92E1C; --eye:#E7EDEF;
+  --os:50%; --ol:40%;
+  --f-disp:'Archivo','Arial Narrow',Arial,sans-serif;
+  --f-body:'Newsreader',Georgia,serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1418; --card:#111E24; --ink:#E2ECEF; --mute:#8EA6AE; --line:#223941;
+    --gild:#E3BC55; --ok:#5CC48C; --bad:#FF8D7A; --eye:#0A1418; --os:55%; --ol:66%; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1418; --card:#111E24; --ink:#E2ECEF; --mute:#8EA6AE; --line:#223941;
+  --gild:#E3BC55; --ok:#5CC48C; --bad:#FF8D7A; --eye:#0A1418; --os:55%; --ol:66%; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:0;padding-bottom:92px}
+.wrap{max-width:640px;margin-inline:auto}
+.oc{--oc:hsl(var(--h) var(--os) var(--ol))}
+.top{padding-block:18px 10px}
+.kick{font:500 11px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gild)}
+h1{font:800 46px/.92 var(--f-disp);font-stretch:75%;text-transform:uppercase;margin:8px 0 12px}
+.strip{display:grid;grid-template-columns:repeat(34,1fr);gap:2px;height:14px}
+.strip i{background:var(--oc);border-radius:1px}
+.prog{display:flex;justify-content:space-between;gap:8px;margin-top:7px;font:500 12px/1.2 var(--f-mono);color:var(--mute)}
+h2{font:800 27px/1 var(--f-disp);font-stretch:75%;text-transform:uppercase;margin:22px 0 10px;text-wrap:balance}
+h3{font:700 19px/1.15 var(--f-disp);font-stretch:85%;margin:0 0 2px}
+p{margin:0 0 10px}
+.lede{color:var(--mute);max-width:60ch;margin:0 0 14px}
+.mono{font:500 11px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.la{font-style:italic;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{min-height:44px;padding:0 16px;border:1px solid var(--ink);background:transparent;color:var(--ink);
+  font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border-radius:6px;cursor:pointer}
+.btn.pri{background:var(--ink);color:var(--bg)}
+.chip{min-height:38px;padding:0 11px;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink);
+  font:500 12px/1 var(--f-mono);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tag{font:500 11px/1 var(--f-mono);padding:5px 7px;border:1px solid var(--line);border-radius:3px;color:var(--mute)}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--gild);outline-offset:2px}
+.sil{display:block;width:100%;height:auto;--fin2:color-mix(in srgb,var(--oc) 66%,var(--ink))}
+.neutral{--oc:var(--mute)}
+.sw{width:100px;flex:none}
+details{border-top:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:56px;padding:10px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";margin-left:auto;font:500 20px var(--f-mono);color:var(--mute)}
+details[open]>summary::after{content:"–"}
+summary>div{min-width:0}
+.dot{width:14px;height:14px;border-radius:2px;background:var(--oc);flex:none}
+.ob{padding:0 0 10px}
+.fb{padding:0 0 16px}
+.fb ul{margin:8px 0;padding-left:20px}
+.hook{font-style:italic;margin:8px 0}
+.ej{margin:8px 0 0;padding:0;list-style:none}
+.ej li{padding:3px 0}
+.phase .task{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:9px 0;border-top:1px solid var(--line)}
+.task input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--ink)}
+.crumbs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.q{font-size:20px;line-height:1.3;margin:0 0 14px}
+.opt{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;
+  background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.opt small{display:block;color:var(--mute);font-style:italic;font-size:14px}
+.opt.ok{border:2px solid var(--ok)}.opt.ok::before{content:"✓ ";color:var(--ok);font-weight:700}
+.opt.bad{border:2px solid var(--bad)}.opt.bad::before{content:"✗ ";color:var(--bad);font-weight:700}
+.opt:disabled{cursor:default}
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:12px 0}
+.minis figure{margin:0;font-size:13px;line-height:1.2}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:14px;color:var(--mute);margin:6px 0 0}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:0 max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
+nav button{min-height:58px;border:0;border-top:3px solid transparent;background:transparent;color:var(--mute);
+  font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+nav button[aria-current="page"]{color:var(--ink);border-top-color:var(--gild)}
+@media (prefers-reduced-motion:no-preference){section{animation:in .18s ease-out}@keyframes in{from{opacity:.4}to{opacity:1}}}
+</style>
+<div class="wrap">
+  <header class="top">
+    <div class="kick">Pepe Flock</div>
+    <h1>Tiburones</h1>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+    <div class="prog"><span id="pc"></span><span>34 familias · 9 órdenes</span></div>
+  </header>
+  <main>
+    <section id="v-plan"></section>
+    <section id="v-clave" hidden></section>
+    <section id="v-explorar" hidden></section>
+    <section id="v-estudiar" hidden></section>
+  </main>
+</div>
+<nav id="tabs" aria-label="Secciones">
+  <button data-v="plan">Plan</button>
+  <button data-v="clave">Clave</button>
+  <button data-v="explorar">Explorar</button>
+  <button data-v="estudiar">Estudiar</button>
+</nav>
+<script>
+/* ===== DATOS: 9 órdenes y 34 familias (nº de especies aproximado) ===== */
+const O=[
+ {id:'HEX',h:270,es:'Hexanchiformes',com:'Cañabotas y tiburón anguila',ct:7,rule:'Una sola dorsal + aleta anal + 6–7 branquias.'},
+ {id:'SQU',h:215,es:'Squaliformes',com:'Mielgas, quelvachos y tiburones de profundidad',ct:140,rule:'Sin aleta anal; dos dorsales, casi siempre con espina.'},
+ {id:'ECH',h:185,es:'Echinorhiniformes',com:'Tiburones de clavos',ct:2,rule:'Sin aleta anal ni espinas; dorsales pequeñas muy atrás.'},
+ {id:'PRI',h:150,es:'Pristiophoriformes',com:'Tiburones sierra',ct:8,rule:'Rostro en sierra con dos barbillones; sin aleta anal.'},
+ {id:'SQT',h:95,es:'Squatiniformes',com:'Angelotes',ct:25,rule:'Cuerpo aplanado, boca terminal, sin aleta anal.'},
+ {id:'HET',h:55,es:'Heterodontiformes',com:'Tiburones cabeza de toro',ct:9,rule:'Espina en cada dorsal + aleta anal.'},
+ {id:'ORE',h:25,es:'Orectolobiformes',com:'Alfombra, nodriza, cebra y ballena',ct:45,rule:'Boca delante de los ojos, barbillones nasales, dos dorsales sin espina.'},
+ {id:'LAM',h:350,es:'Lamniformes',com:'Marrajos, zorros, peregrino y afines',ct:15,rule:'Con aleta anal, sin espinas, sin membrana nictitante.'},
+ {id:'CAR',h:305,es:'Carcharhiniformes',com:'Pintarrojas, cazones, requiems y cornudas',ct:290,rule:'Con aleta anal, sin espinas, con membrana nictitante.'}
+];
+const F=[];
+const f=(id,o,es,la,n,s,r,g,ej,t=[])=>F.push({id,o,es,la,n,s,r,g,ej,t});
+/* s = parámetros de la silueta (ver sil()); r = rasgos; g = gancho; ej = [nombre, especie] */
+f('hex','HEX','Cañabotas','Hexanchidae',5,{hb:14,sn:'round',d:1,d1:14,pec:15,gills:7},
+ ['6 o 7 branquias','Una sola dorsal, muy atrás','Con aleta anal','Cuerpo robusto, hocico romo'],
+ 'Cuenta las branquias: 6 o 7, y una sola dorsal.',
+ [['Cañabota gris','Hexanchus griseus'],['Tiburón de siete branquias','Notorynchus cepedianus'],['Cañabota ojigrande','Heptranchias perlo']]);
+f('chl','HEX','Tiburones anguila','Chlamydoselachidae',2,{hb:6,sn:'blunt',tail:'paddle',d:1,d1:9,pec:9,gills:6},
+ ['Cuerpo de anguila','6 branquias con bordes de volante','Boca terminal, dientes de tres puntas','Una dorsal retrasada'],
+ 'Anguila con volantes en las branquias.',
+ [['Tiburón anguila','Chlamydoselachus anguineus'],['Tiburón anguila africano','Chlamydoselachus africana']],['Aguas profundas']);
+f('sqd','SQU','Mielgas','Squalidae',35,{hb:9,sn:'point',d1:13,d2:9,pec:12,anal:0,sp:1},
+ ['Sin aleta anal','Espina delante de cada dorsal','Cuerpo esbelto y hocico en punta'],
+ 'Un pincho por dorsal: el cazón espinoso.',
+ [['Mielga','Squalus acanthias'],['Galludo','Squalus blainville']],['Espinas dorsales']);
+f('ctr','SQU','Quelvachos','Centrophoridae',16,{hb:10,sn:'point',d1:12,d2:11,pec:12,anal:0,sp:1},
+ ['Sin aleta anal','Espinas en ambas dorsales','Hocico largo y ojos grandes','Aguas profundas'],
+ 'Mielga de profundidad: hocico largo y espinas marcadas.',
+ [['Quelvacho','Centrophorus granulosus'],['','Deania calcea']],['Espinas dorsales','Aguas profundas']);
+f('etm','SQU','Tiburones linterna','Etmopteridae',55,{hb:8,sn:'blunt',d1:10,d2:10,pec:8,anal:0,sp:1,deco:'photo'},
+ ['Pequeños (la mayoría menos de 1 m)','Fotóforos: puntos luminosos en el vientre','Espinas en ambas dorsales','Sin aleta anal'],
+ 'Linterna encendida en la panza.',
+ [['Negrito','Etmopterus spinax'],['Tiburón víbora','Trigonognathus kabeyai']],['Bioluminiscentes','Aguas profundas','Espinas dorsales']);
+f('som','SQU','Tiburones dormilones','Somniosidae',17,{hb:15,sn:'round',d1:9,d2:8,pec:11,anal:0},
+ ['Sin aleta anal','Dorsales pequeñas y bajas','Cuerpo cilíndrico y robusto','Aguas frías y profundas'],
+ 'Gordo, lento y de dorsales diminutas.',
+ [['Tiburón de Groenlandia','Somniosus microcephalus'],['Pailona común','Centroscymnus coelolepis']],['Aguas profundas']);
+f('oxy','SQU','Peces cerdo','Oxynotidae',5,{hb:17,sn:'blunt',d1:21,d2:20,pec:12,anal:0,sp:1},
+ ['Sin aleta anal','Dos dorsales altas como velas, con espina','Cuerpo alto, de sección triangular','Piel muy áspera'],
+ 'Dos velas triangulares sobre un cuerpo alto.',
+ [['Pez cerdo','Oxynotus centrina'],['','Oxynotus bruniensis']],['Espinas dorsales']);
+f('dal','SQU','Dalátidos','Dalatiidae',10,{hb:8,sn:'blunt',d1:8,d2:8,pec:9,anal:0,deco:'photo'},
+ ['Sin aleta anal','Cuerpo fusiforme, casi cilíndrico','Dientes inferiores grandes y cortantes','Muchos son luminiscentes'],
+ 'Cuerpo de cigarro y mordisco redondo (Isistius).',
+ [['Tiburón cigarro','Isistius brasiliensis'],['','Dalatias licha'],['','Squaliolus laticaudus']],['Bioluminiscentes','Aguas profundas']);
+f('ech','ECH','Tiburones de clavos','Echinorhinidae',2,{hb:15,sn:'blunt',d1:9,d2:9,pec:11,anal:0},
+ ['Sin aleta anal ni espinas','Dos dorsales pequeñas y retrasadas','Piel con grandes dentículos como clavos','Cuerpo robusto, hocico corto'],
+ 'Piel de clavos y dorsales escondidas atrás.',
+ [['Tiburón de clavos','Echinorhinus brucus'],['','Echinorhinus cookei']]);
+f('pri','PRI','Tiburones sierra','Pristiophoridae',8,{hb:8,sn:'point',x:'saw',d1:11,d2:10,pec:14,anal:0},
+ ['Rostro alargado en forma de sierra','Dos barbillones largos a mitad del rostro','Sin aleta anal','Branquias en los costados'],
+ 'Sierra con dos bigotes. Ojo: el pez sierra es una raya, con branquias en el vientre.',
+ [['Tiburón sierra común','Pristiophorus cirratus'],['Tiburón sierra de seis branquias','Pliotrema warreni']],['Hocico/cabeza rara','Barbillones']);
+f('sqt','SQT','Angelotes','Squatinidae',25,{x:'flat'},
+ ['Cuerpo aplanado, aspecto de raya','Branquias laterales, pectorales separadas de la cabeza','Boca en la punta del hocico','Sin aleta anal'],
+ 'Raya con branquias de tiburón, enterrada en la arena.',
+ [['Angelote','Squatina squatina'],['Angelote del Pacífico','Squatina californica']],['Aplanados']);
+f('het','HET','Tiburones cabeza de toro','Heterodontidae',9,{hb:15,sn:'blunt',d1:16,d2:14,pec:18,sp:1},
+ ['Espina en cada dorsal','Cresta ósea sobre los ojos','Con aleta anal','Dientes delanteros punzantes, traseros planos'],
+ 'Aleta anal + espina en cada dorsal: combinación única.',
+ [['Tiburón cornudo','Heterodontus francisci'],['Tiburón de Port Jackson','Heterodontus portusjacksoni']],['Espinas dorsales']);
+f('par','ORE','Alfombra de collar','Parascylliidae',8,{hb:6,sn:'round',d1:9,d2:9,pec:9,x:'barb'},
+ ['Pequeños y muy esbeltos','Barbillones nasales','Dos dorsales muy retrasadas','Algunos con collar oscuro'],
+ 'Alfombrita esbelta con barbillones.',
+ [['Tiburón alfombra de collar','Parascyllium collare']],['Barbillones']);
+f('bra','ORE','Tiburones ciegos','Brachaeluridae',2,{hb:12,sn:'round',d1:14,d2:12,pec:14,x:'barb',deco:'saddle'},
+ ['Cuerpo robusto con barbillones nasales','Boca delante de los ojos','Dos dorsales sin espinas','Aguanta fuera del agua en charcas de marea'],
+ 'Robusto, con barbillones, sobrevive en seco entre mareas.',
+ [['Tiburón ciego','Brachaelurus waddi'],['','Heteroscyllium colcloughi']],['Barbillones']);
+f('ore','ORE','Wobbegongs','Orectolobidae',12,{hb:12,sn:'blunt',d1:13,d2:12,pec:17,x:'fringe',deco:'saddle'},
+ ['Aplanados, camuflaje en mosaico','Flecos de piel alrededor de la boca','Boca delante de los ojos, con barbillones','Dos dorsales sin espinas'],
+ 'Alfombra con flecos alrededor de la boca.',
+ [['Wobbegong manchado','Orectolobus maculatus'],['Wobbegong de flecos','Eucrossorhinus dasypogon']],['Aplanados','Barbillones']);
+f('hem','ORE','Tiburones bambú','Hemiscylliidae',17,{hb:7,sn:'round',d1:11,d2:11,pec:13,tk:1.4,xp:128,deco:'bands'},
+ ['Esbeltos, de cola muy larga','Dos dorsales retrasadas casi iguales','Barbillones nasales','Algunos "caminan" por el fondo con las aletas'],
+ 'Cola larga y a veces caminan con las aletas.',
+ [['Tiburón bambú','Chiloscyllium plagiosum'],['Tiburón epaulette','Hemiscyllium ocellatum']],['Barbillones']);
+f('gin','ORE','Tiburones nodriza','Ginglymostomatidae',4,{hb:14,sn:'blunt',d1:13,d2:12,pec:16,x:'barb'},
+ ['Cuerpo robusto, pardo uniforme','Barbillones nasales cortos y gruesos','Dos dorsales casi iguales, muy atrás','Descansa en el fondo, a veces en grupos'],
+ 'Pardo liso, barbillones gordos y siesta en el fondo.',
+ [['Tiburón nodriza','Ginglymostoma cirratum'],['Tiburón nodriza leonado','Nebrius ferrugineus']],['Barbillones']);
+f('ste','ORE','Tiburón cebra','Stegostomatidae',1,{hb:11,sn:'round',d1:16,d2:11,pec:16,tk:1.9,xp:104,x:'barb',deco:'spots'},
+ ['Cola larguísima, casi como el cuerpo','Crestas longitudinales en el cuerpo','Juveniles a rayas, adultos moteados','Barbillones nasales cortos'],
+ 'La cola mide casi como el cuerpo.',
+ [['Tiburón cebra','Stegostoma tigrinum']],['Cola larguísima','Barbillones']);
+f('rhi','ORE','Tiburón ballena','Rhincodontidae',1,{hb:19,sn:'blunt',tail:'lunate',d1:20,d2:11,pec:18,deco:'grid'},
+ ['El pez más grande: hasta unos 12 m','Boca ancha en la punta del hocico','Damero de puntos y líneas blancas','Tres crestas a cada lado'],
+ 'Gigante con damero de puntos blancos.',
+ [['Tiburón ballena','Rhincodon typus']],['Filtradores']);
+</script>
+<script>
+f('odo','LAM','Tiburones de arena','Odontaspididae',3,{hb:15,sn:'round',d1:16,d2:14,pec:15},
+ ['Dientes largos y finos, visibles con la boca cerrada','Segunda dorsal y anal casi tan grandes como la primera','Cuerpo robusto, hocico cónico','Cola asimétrica, lóbulo superior largo'],
+ 'Dientes de aguja que se ven con la boca cerrada.',
+ [['Tiburón de arena','Carcharias taurus'],['Solrayo','Odontaspis ferox']]);
+f('mit','LAM','Tiburón duende','Mitsukurinidae',1,{hb:11,sn:'point',x:'beak',d1:10,d2:9,pec:12},
+ ['Hocico larguísimo y plano, como un espolón','Mandíbulas que se proyectan hacia delante','Piel rosada, casi translúcida','Dorsales redondeadas y bajas'],
+ 'Hocico en espolón y mandíbula que salta.',
+ [['Tiburón duende','Mitsukurina owstoni']],['Hocico/cabeza rara','Aguas profundas']);
+f('pse','LAM','Tiburón cocodrilo','Pseudocarchariidae',1,{hb:9,sn:'round',d1:10,d2:9,pec:12},
+ ['Pequeño y cilíndrico (hasta ~1 m)','Ojos muy grandes','Dientes largos y finos','Dorsales pequeñas y retrasadas'],
+ 'Pequeño, ojos enormes y dientes de aguja.',
+ [['Tiburón cocodrilo','Pseudocarcharias kamoharai']]);
+f('meg','LAM','Tiburón bocudo','Megachasmidae',1,{hb:17,sn:'blunt',d1:14,d2:9,pec:15},
+ ['Boca enorme y terminal con borde claro','Cabeza grande y roma','Dientes diminutos: filtra krill','Cola asimétrica'],
+ 'Bocaza con borde claro: filtra krill.',
+ [['Tiburón bocudo','Megachasma pelagios']],['Filtradores']);
+f('alo','LAM','Tiburones zorro','Alopiidae',3,{hb:11,sn:'round',tail:'long',d1:17,d2:6,pec:20},
+ ['Lóbulo superior de la cola casi tan largo como el cuerpo','Segunda dorsal diminuta','Pectorales largas y curvas'],
+ 'La cola superior es un látigo del largo del cuerpo.',
+ [['Tiburón zorro','Alopias vulpinus'],['Zorro pelágico','Alopias pelagicus'],['Zorro ojón','Alopias superciliosus']],['Cola larguísima']);
+f('cet','LAM','Tiburón peregrino','Cetorhinidae',1,{hb:17,sn:'round',tail:'lunate',d1:20,d2:8,pec:16,x:'keel'},
+ ['Boca enorme que se abre al filtrar','Branquias que casi rodean la cabeza','Hocico cónico y cola semilunar con quilla','Segundo pez más grande: ~10 m'],
+ 'Boca enorme y branquias que rodean la cabeza.',
+ [['Tiburón peregrino','Cetorhinus maximus']],['Filtradores']);
+f('lam','LAM','Marrajos y tiburón blanco','Lamnidae',5,{hb:17,sn:'point',tail:'lunate',d1:22,d2:6,pec:20,x:'keel'},
+ ['Cuerpo en torpedo','Cola en media luna con quilla en el pedúnculo','Segunda dorsal y anal diminutas','Mantienen el cuerpo más caliente que el agua'],
+ 'Torpedo con cola en media luna.',
+ [['Tiburón blanco','Carcharodon carcharias'],['Marrajo dientuso','Isurus oxyrinchus'],['Marrajo sardinero','Lamna nasus']]);
+f('sci','CAR','Pintarrojas y gatos','Scyliorhinidae',160,{hb:8,sn:'round',d1:10,d2:9,pec:11,deco:'spots'},
+ ['Pequeños y alargados (la mayoría menos de 1 m)','Ojos alargados, de gato','Dorsales retrasadas','Ponen huevos en cápsulas córneas'],
+ 'Pequeña, alargada y con ojos de gato.',
+ [['Pintarroja','Scyliorhinus canicula'],['Alitán','Scyliorhinus stellaris']]);
+f('pro','CAR','Gatos de dorsales bajas','Proscylliidae',6,{hb:6,sn:'round',d1:8,d2:8,pec:9},
+ ['Muy pequeños y esbeltos','Dorsales bajas y alargadas','Membrana nictitante','Pocas especies (unas 6)'],
+ 'Gatos esbeltos de dorsales bajas.',
+ [['','Proscyllium habereri'],['','Eridacnis radcliffei']]);
+f('psu','CAR','Falsos gatos','Pseudotriakidae',3,{hb:12,sn:'round',d1:12,d2:10,pec:13},
+ ['Primera dorsal larga y baja, como una cresta','Cuerpo flácido y aceitoso','Dientes pequeños en muchas hileras','Aguas profundas'],
+ 'Dorsal larga y baja, como una cresta.',
+ [['Tiburón gato falso','Pseudotriakis microdon'],['','Gollum attenuatus']],['Aguas profundas']);
+f('lep','CAR','Tiburón barbudo','Leptochariidae',1,{hb:7,sn:'round',d1:10,d2:9,pec:11,x:'barb'},
+ ['Barbillones en las narinas','Cuerpo esbelto, hasta ~80 cm','Dos dorsales sin espinas','Costas tropicales de África occidental'],
+ 'Barbillones y cuerpo fino: el barbudo de África.',
+ [['Tiburón barbudo','Leptocharias smithii']],['Barbillones']);
+f('tri','CAR','Musolas y cazones','Triakidae',45,{hb:10,sn:'round',d1:14,d2:12,pec:14,deco:'spots'},
+ ['Medianos y esbeltos','Ojos ovalados con membrana nictitante','Segunda dorsal casi tan grande como la primera','Mustelus: dientes planos en mosaico'],
+ 'Ojos ovalados y dos dorsales de tamaño parecido.',
+ [['Musola','Mustelus mustelus'],['Cazón','Galeorhinus galeus'],['Tiburón leopardo','Triakis semifasciata']]);
+f('hmg','CAR','Tiburones comadreja','Hemigaleidae',8,{hb:9,sn:'round',d1:14,d2:11,pec:12},
+ ['Esbeltos, de hocico corto','Segunda dorsal casi igual a la primera','Membrana nictitante','Hemipristis: dientes serrados que asoman con la boca cerrada'],
+ 'Delgados; en Hemipristis los dientes asoman.',
+ [['Tiburón comadreja','Hemigaleus microstoma'],['','Hemipristis elongata']]);
+f('car','CAR','Tiburones requiem','Carcharhinidae',57,{hb:13,sn:'round',d1:19,d2:8,pec:17},
+ ['Membrana nictitante','Primera dorsal alta y triangular','Segunda dorsal pequeña, sin espinas','Medianos a grandes, de aguas cálidas'],
+ 'Dorsal alta y triangular + membrana nictitante.',
+ [['Tiburón azul (tintorera)','Prionace glauca'],['Tiburón tigre','Galeocerdo cuvier'],['Tiburón toro','Carcharhinus leucas'],['Tiburón de puntas negras','Carcharhinus melanopterus']]);
+f('sph','CAR','Cornudas','Sphyrnidae',10,{hb:12,sn:'round',x:'hammer',d1:22,d2:8,pec:16},
+ ['Cabeza aplanada en martillo (cefalofoil)','Ojos en los extremos de la cabeza','Primera dorsal muy alta','Membrana nictitante'],
+ 'Cabeza en martillo con los ojos en las puntas.',
+ [['Cornuda gigante','Sphyrna mokarran'],['Cornuda cruz','Sphyrna zygaena']],['Hocico/cabeza rara']);
+</script>
+<script>
+/* ===== SILUETAS: se dibujan a partir de rasgos (forma, dorsales, anal, cola, extras) ===== */
+let _sid=0;
+function sil(p,lab){
+  p=Object.assign({hb:12,sn:'point',tail:'epi',d:2,d1:18,d2:9,pec:15,anal:1,gills:5,sp:0,deco:'',x:'',xp:142,tk:1},p);
+  const open=`<svg class="sil" viewBox="0 0 220 124" role="img" aria-label="${lab||'Silueta de tiburón'}">`;
+  if(p.x==='flat'){
+    return open+`<path d="M122,59L172,60L206,44L198,62L208,80L172,64L122,65Z" fill="var(--fin2)"/>
+<ellipse cx="148" cy="62" rx="7" ry="2.6" fill="var(--fin2)"/><ellipse cx="168" cy="62" rx="6" ry="2.2" fill="var(--fin2)"/>
+<path d="M96,56C108,36 128,40 126,56C128,64 118,66 108,64Z" fill="var(--fin2)"/>
+<path d="M96,68C108,88 128,84 126,68C128,60 118,58 108,60Z" fill="var(--fin2)"/>
+<path d="M22,62C34,56 54,54 66,38C80,20 98,30 98,48C112,54 122,59 124,62C122,65 112,70 98,76C98,94 80,104 66,86C54,70 34,68 22,62Z" fill="var(--oc)"/>
+<circle cx="40" cy="57" r="2.2" fill="var(--eye)"/><circle cx="40" cy="67" r="2.2" fill="var(--eye)"/>
+<path d="M24,62h8" stroke="var(--eye)" stroke-width="1.2"/></svg>`;
+  }
+  const id='c'+(++_sid), yc=62, hb=p.hb, hl=hb*.85, hp=3, xp=p.xp, k=p.tk;
+  const n=(p.x==='saw'||p.x==='beak')?44:p.x==='hammer'?28:14, L=xp-n;
+  const sf={point:.2,round:.11,blunt:.05}[p.sn], kf={point:.3,round:.7,blunt:.9}[p.sn], pk=n+L*.4;
+  const body=`M${n},${yc}C${n+L*sf},${yc-hb*kf} ${n+L*.22},${yc-hb} ${pk},${yc-hb}C${pk+L*.25},${yc-hb} ${xp-L*.2},${yc-hp*1.3} ${xp},${yc-hp}L${xp},${yc+hp}C${xp-L*.2},${yc+hp*1.3} ${pk+L*.25},${yc+hl} ${pk},${yc+hl}C${n+L*.22},${yc+hl} ${n+L*sf},${yc+hl*kf} ${n},${yc}Z`;
+  const X=v=>xp+v*k;
+  const T={
+    epi:`M${xp-2},${yc-hp}C${X(12)},${yc-hp-4} ${X(28)},${yc-22} ${X(44)},${yc-34}C${X(40)},${yc-22} ${X(36)},${yc-12} ${X(30)},${yc-4}C${X(38)},${yc+4} ${X(36)},${yc+14} ${X(30)},${yc+20}C${X(20)},${yc+14} ${X(10)},${yc+6} ${xp-2},${yc+hp}Z`,
+    lunate:`M${xp-2},${yc-hp}C${xp+10},${yc-hp-4} ${xp+26},${yc-24} ${xp+42},${yc-36}C${xp+34},${yc-18} ${xp+28},${yc-6} ${xp+28},${yc}C${xp+28},${yc+6} ${xp+34},${yc+18} ${xp+42},${yc+36}C${xp+26},${yc+24} ${xp+10},${yc+hp+4} ${xp-2},${yc+hp}Z`,
+    long:`M${xp-2},${yc-hp}C${xp+14},${yc-hp-6} ${xp+36},${yc-30} ${xp+62},${yc-56}C${xp+50},${yc-30} ${xp+40},${yc-12} ${xp+26},${yc-4}C${xp+34},${yc+2} ${xp+32},${yc+10} ${xp+26},${yc+14}C${xp+16},${yc+10} ${xp+8},${yc+5} ${xp-2},${yc+hp}Z`,
+    paddle:`M${xp-2},${yc-hp}C${xp+14},${yc-hp-6} ${xp+36},${yc-10} ${xp+52},${yc-2}C${xp+36},${yc+6} ${xp+14},${yc+hp+4} ${xp-2},${yc+hp}Z`
+  }[p.tail];
+  const dor=(x,s,y)=>`<path d="M${x},${y+5}C${x+3},${y-s*.5} ${x+9},${y-s} ${x+13},${y-s}C${x+14},${y-s*.4} ${x+19},${y} ${x+24},${y+5}Z" fill="var(--fin2)"/>`+
+    (p.sp?`<path d="M${x+2},${y-s*.3}L${x+8},${y-s-5}L${x+9},${y-s*.4}Z" fill="var(--gild)"/>`:'');
+  let o=open+`<clipPath id="${id}"><path d="${body}"/></clipPath><path d="${T}" fill="var(--fin2)"/><path d="${body}" fill="var(--oc)"/>`;
+  o+= p.d===1 ? dor(xp-L*.32-12,p.d1,yc-hb*.62) : dor(n+L*.46,p.d1,yc-hb+1)+dor(xp-L*.26-12,p.d2,yc-hb*.55);
+  if(p.anal){const x=xp-L*.2-6,y=yc+hl*.5; o+=`<path d="M${x},${y}C${x+3},${y+7} ${x+7},${y+10} ${x+11},${y+10}C${x+12},${y+5} ${x+15},${y+2} ${x+18},${y-1}Z" fill="var(--fin2)"/>`;}
+  {const x=xp-L*.34-6,y=yc+hl*.55; o+=`<path d="M${x},${y}C${x+4},${y+9} ${x+8},${y+11} ${x+15},${y+11}C${x+12},${y+5} ${x+14},${y+2} ${x+16},${y-2}Z" fill="var(--fin2)"/>`;}
+  {const x=n+L*.33,y=yc+hl*.3,s=p.pec; o+=`<path d="M${x},${y}C${x+8},${y+s*.5} ${x+20},${y+s} ${x+34},${y+s+3}C${x+28},${y+s*.4} ${x+22},${y+4} ${x+14},${y-5}Z" fill="var(--fin2)"/>`;}
+  let g='';
+  const sp=[[.2,-.25],[.32,.15],[.44,-.3],[.56,.2],[.66,-.15],[.78,.1],[.38,0],[.5,0],[.7,.25]];
+  if(p.deco==='spots') g=sp.map(a=>`<circle cx="${n+L*a[0]}" cy="${yc+hb*a[1]}" r="2.2" fill="var(--eye)" opacity=".45"/>`).join('');
+  if(p.deco==='grid') for(let i=0;i<8;i++)for(let j=0;j<4;j++) g+=`<circle cx="${n+L*(.18+i*.08)}" cy="${yc+hb*(-.6+j*.4)}" r="1.5" fill="var(--eye)" opacity=".6"/>`;
+  if(p.deco==='bands') for(let i=0;i<6;i++) g+=`<rect x="${n+L*(.2+i*.1)}" y="${yc-hb-2}" width="5" height="${hb*2+4}" fill="var(--fin2)" opacity=".5"/>`;
+  if(p.deco==='saddle') for(let i=0;i<4;i++) g+=`<ellipse cx="${n+L*(.3+i*.15)}" cy="${yc-hb*.75}" rx="9" ry="4.5" fill="var(--fin2)" opacity=".85"/>`;
+  if(p.deco==='photo') for(let i=0;i<10;i++) g+=`<circle cx="${n+L*(.15+i*.075)}" cy="${yc+hl*.68}" r="1.5" fill="var(--gild)"/>`;
+  if(g) o+=`<g clip-path="url(#${id})">${g}</g>`;
+  const st=`stroke="var(--fin2)" stroke-width="1.6" fill="none" stroke-linecap="round"`;
+  if(p.x==='saw'){
+    o+=`<path d="M${n+1},${yc-5}L6,${yc-1.5}L6,${yc+1.5}L${n+1},${yc+5}Z" fill="var(--oc)"/>`;
+    for(let i=0;i<6;i++) o+=`<path d="M${11+i*5},${yc+1.5}l2.5,6l2.5,-6z" fill="var(--oc)"/>`;
+    o+=`<path d="M${n-16},${yc+3}l-1,9M${n-11},${yc+3}l-1,9" ${st}/>`;
+  }
+  if(p.x==='beak') o+=`<path d="M${n+1},${yc-4}C${n-14},${yc-3} ${n-26},${yc-1} 8,${yc+3}C${n-26},${yc+4} ${n-14},${yc+5} ${n+1},${yc+6}Z" fill="var(--oc)"/>`;
+  if(p.x==='barb') o+=`<path d="M${n+3},${yc+hb*.25}q-1,7 -5,9M${n+7},${yc+hb*.3}q0,7 -4,10" ${st}/>`;
+  if(p.x==='fringe') for(let i=0;i<6;i++) o+=`<path d="M${n+L*.03+i*5},${yc+hb*.5}l2.5,8l2.5,-8z" fill="var(--fin2)"/>`;
+  if(p.x==='keel') o+=`<path d="M${xp-18},${yc}H${xp+3}" stroke="var(--eye)" stroke-width="1.5" opacity=".7"/>`;
+  if(p.x==='hammer'){
+    o+=`<rect x="${n-12}" y="${yc-18}" width="16" height="36" rx="8" fill="var(--oc)" transform="rotate(-12 ${n-4} ${yc})"/><circle cx="${n-6}" cy="${yc-12}" r="2.2" fill="var(--eye)"/>`;
+  } else {
+    o+=`<circle cx="${n+L*.12}" cy="${yc-hb*.2}" r="2.4" fill="var(--eye)"/>`+
+       `<path d="M${n+L*.07},${yc+hb*.2}q${L*.07},${hb*.2} ${L*.15},${hb*.12}" stroke="var(--eye)" stroke-width="1.2" fill="none"/>`;
+  }
+  for(let i=0;i<p.gills;i++) o+=`<path d="M${n+L*.27+i*3.6},${yc-hb*.55}q-1.5,${hb*.35} 0,${hb*.7}" stroke="var(--eye)" stroke-width="1" fill="none" opacity=".65"/>`;
+  return o+'</svg>';
+}
+</script>
+<script>
+/* ===== APP ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const OM=Object.fromEntries(O.map(o=>[o.id,o])), FM=Object.fromEntries(F.map(x=>[x.id,x]));
+let S={boxes:{},plan:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem('pf-tiburones-v1')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('pf-tiburones-v1',JSON.stringify(S))}catch(e){}};
+const box=id=>S.boxes[id]||0;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ALLTAGS=['Sin aleta anal','Espinas dorsales','Aguas profundas','Bioluminiscentes','Aplanados','Filtradores','Barbillones','Hocico/cabeza rara','Cola larguísima'];
+const NOANAL=['SQU','ECH','PRI','SQT'];
+const tagsOf=x=>NOANAL.includes(x.o)?['Sin aleta anal',...x.t]:x.t;
+
+/* --- cabecera: una celda por familia, más opaca cuanto mejor la sabes --- */
+function paintHead(){
+  $('#strip').innerHTML=F.map(x=>`<i class="oc" style="--h:${OM[x.o].h};opacity:${.2+.2*box(x.id)}"></i>`).join('');
+  $('#pc').textContent=`${F.filter(x=>box(x.id)>=3).length} de 34 dominadas`;
+}
+
+/* --- familias --- */
+const nm=e=>e[0]?`<b>${esc(e[0])}</b> <span class="la">${esc(e[1])}</span>`:`<span class="la">${esc(e[1])}</span>`;
+const famBody=x=>`<div class="fb"><p class="mono">${OM[x.o].es} · ~${x.n} especies</p><ul>${x.r.map(r=>`<li>${esc(r)}</li>`).join('')}</ul><p class="hook">${esc(x.g)}</p><ul class="ej">${x.ej.map(e=>`<li>${nm(e)}</li>`).join('')}</ul></div>`;
+const famRow=(x,showO)=>`<details class="oc" style="--h:${OM[x.o].h}"><summary><div class="sw">${sil(x.s,x.es)}</div><div><h3>${esc(x.es)}</h3><span class="la">${esc(x.la)}</span>${showO?`<div class="mono">${OM[x.o].es}</div>`:''}</div></summary>${famBody(x)}</details>`;
+
+/* --- PLAN --- */
+const PH=[
+ {k:'p1',t:'Días 1–3',h:'Los 9 órdenes con tres preguntas',d:'10 minutos al día. Antes de nombrar nada, aprende a mirar: aleta anal, dorsales y párpado.',go:'clave',tasks:[
+   ['a','Recorre la Clave 5 veces, cada una pensando en un tiburón que ya conozcas.'],
+   ['b','Repite de memoria: ¿aleta anal? ¿cuántas dorsales y con espina? ¿membrana nictitante?'],
+   ['c','Nombra los 9 órdenes asociándolos a su color en Explorar.']]},
+ {k:'p2',t:'Semana 1',h:'Los dos órdenes famosos',d:'Lamniformes (7 familias) y Orectolobiformes (7). Son pocos y muy distintos entre sí.',go:'explorar',tasks:[
+   ['a','Lamniformes: ver las 7 siluetas y decir el rasgo clave de cada una.'],
+   ['b','Orectolobiformes: lo mismo con sus 7 familias.'],
+   ['c','En Estudiar, dominar 10 de estas 14 familias.']]},
+ {k:'p3',t:'Semana 2',h:'Los cinco órdenes pequeños',d:'Hexanchiformes, Echinorhiniformes, Pristiophoriformes, Squatiniformes y Heterodontiformes: 6 familias con un rasgo que no se confunde.',go:'explorar',tasks:[
+   ['a','Ver las 6 familias y fijar su rasgo único (6–7 branquias, clavos, sierra, plano, anal + espinas).'],
+   ['b','En Estudiar, dominar las 6.']]},
+ {k:'p4',t:'Semana 3',h:'Squaliformes',d:'6 familias sin aleta anal. Se distinguen por espinas, forma del cuerpo y luces.',go:'explorar',tasks:[
+   ['a','Ver las 6 familias y compararlas con el filtro "Espinas dorsales".'],
+   ['b','En Estudiar, dominar las 6.']]},
+ {k:'p5',t:'Semana 4',h:'Carcharhiniformes',d:'8 familias con membrana nictitante. Es el orden más grande: cerca de 290 especies.',go:'explorar',tasks:[
+   ['a','Ver las 8 familias.'],
+   ['b','En Estudiar, dominar las 8.'],
+   ['c','Llegar a 34 familias dominadas.']]},
+ {k:'p6',t:'Semanas 5–8',h:'Especies',d:'Con la familia fijada, cada especie cuelga de ella. Empieza por las cinco familias que suman casi dos tercios de las especies: Scyliorhinidae, Carcharhinidae, Etmopteridae, Triakidae y Squalidae.',tasks:[
+   ['a','Aprender los ejemplos de esas 5 familias.'],
+   ['b','Añadir 3 especies más por familia (de tu lista).'],
+   ['c','Recorrer las demás familias de una en una.']]},
+ {k:'p7',t:'Siempre',h:'Repaso espaciado',d:'Vuelve a Estudiar los días 1, 3, 7, 14 y 30 después de cada bloque. La app prioriza solas las familias que fallas.',go:'estudiar',tasks:[]}
+];
+function count(){const t=PH.reduce((a,p)=>a+p.tasks.length,0),d=Object.values(S.plan).filter(Boolean).length;const e=$('#pcount');if(e)e.textContent=`${d} de ${t} tareas`}
+function vPlan(){
+  $('#v-plan').innerHTML=`<h2>Plan de 8 semanas</h2><p class="lede">34 familias en 9 órdenes. Primero aprendes a mirar (aletas, boca, branquias), luego los nombres, y al final las especies, que cuelgan de su familia.</p>`+
+  PH.map(p=>`<div class="card phase"><div class="mono">${p.t}</div><h3>${p.h}</h3><p>${esc(p.d)}</p>${p.tasks.map(t=>{const id=p.k+t[0];return `<label class="task"><input type="checkbox" data-t="${id}" ${S.plan[id]?'checked':''}><span>${esc(t[1])}</span></label>`}).join('')}${p.go?`<div class="row" style="margin-top:10px"><button class="btn" data-go="${p.go}">Ir a ${p.go}</button></div>`:''}</div>`).join('')+
+  `<p class="mono" id="pcount"></p><div class="row" style="margin-top:6px"><button class="btn" data-reset="1">Borrar mi progreso</button></div>`;
+  count();
+}
+
+/* --- CLAVE: [pregunta, si, no, etiqueta] --- */
+const KEY={
+ q1:['¿Tiene aleta anal? Es la aleta pequeña del vientre, justo antes de la cola.','q4','q2','Aleta anal'],
+ q2:['¿El cuerpo es plano como una raya y la boca está en la punta del hocico?','SQT','q3','Cuerpo plano'],
+ q3:['¿El hocico acaba en una sierra con dos barbillones?','PRI','q3b','Sierra'],
+ q3b:['¿Las dorsales son pequeñas y muy retrasadas, y la piel lleva grandes dentículos como clavos?','ECH','SQU','Clavos'],
+ q4:['¿Tiene una sola aleta dorsal (y 6 o 7 branquias)?','HEX','q5','Una dorsal'],
+ q5:['¿Hay una espina delante de cada dorsal y una cresta sobre los ojos?','HET','q6','Espinas'],
+ q6:['¿La boca está delante de los ojos y hay barbillones junto a las narinas?','ORE','q7','Barbillones'],
+ q7:['¿Los ojos tienen membrana nictitante, un tercer párpado que sube desde abajo?','CAR','LAM','Membrana nictitante']
+};
+let kp=[];
+function vClave(){
+  let node='q1';const cr=[];
+  kp.forEach(a=>{cr.push(`${KEY[node][3]}: ${a?'sí':'no'}`);node=a?KEY[node][1]:KEY[node][2]});
+  let h=`<h2>Clave de órdenes</h2>`;
+  if(!kp.length)h+=`<p class="lede">Responde sí o no mirando al tiburón. En cuatro preguntas como máximo llegas a su orden.</p>`;
+  if(cr.length)h+=`<div class="crumbs">${cr.map(c=>`<span class="tag">${esc(c)}</span>`).join('')}</div>`;
+  if(OM[node]){
+    const o=OM[node],fs=F.filter(x=>x.o===node);
+    h+=`<div class="card oc" style="--h:${o.h}"><div class="row"><span class="dot"></span><span class="mono">Orden</span></div><h3 style="font-size:28px;margin-top:6px">${o.es}</h3><p class="la">${o.com} · ~${o.ct} especies</p><p>${o.rule}</p><div class="minis">${fs.map(x=>`<figure>${sil(x.s,x.es)}<figcaption>${esc(x.es)}</figcaption></figure>`).join('')}</div><div class="row"><button class="btn pri" data-open="${node}">Ver familias</button><button class="btn" data-k="reset">Otra vez</button></div></div>`;
+  }else{
+    h+=`<div class="card"><p class="q">${KEY[node][0]}</p><div class="row"><button class="btn pri" data-k="1">Sí</button><button class="btn" data-k="0">No</button>${kp.length?'<button class="btn" data-k="back">Atrás</button>':''}</div></div>`;
+  }
+  $('#v-clave').innerHTML=h;
+}
+
+/* --- EXPLORAR --- */
+let ftag='',openO=null;
+function vExp(){
+  let h=`<h2>Explorar</h2><p class="lede">Toca un orden para ver sus familias. En las siluetas, los triángulos dorados son espinas dorsales y los puntos dorados del vientre son luces (fotóforos).</p>`;
+  h+=`<div class="row" role="group" aria-label="Filtrar por rasgo">${ALLTAGS.map(t=>`<button class="chip" aria-pressed="${ftag===t}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div><div style="height:12px"></div>`;
+  if(ftag){
+    const fs=F.filter(x=>tagsOf(x).includes(ftag));
+    h+=`<p class="mono">${fs.length} familias con: ${esc(ftag)}</p>`+fs.map(x=>famRow(x,true)).join('');
+  }else h+=O.map(o=>{const fs=F.filter(x=>x.o===o.id);return `<details class="oc" style="--h:${o.h}" data-o="${o.id}" ${openO===o.id?'open':''}><summary><span class="dot"></span><div><h3>${o.es}</h3><span class="la">${o.com}</span><div class="mono">~${o.ct} especies · ${fs.length} fam.</div></div></summary><div class="ob"><p>${o.rule}</p>${fs.map(x=>famRow(x)).join('')}</div></details>`}).join('');
+  $('#v-explorar').innerHTML=h;
+}
+
+/* --- ESTUDIAR: repetición espaciada simple (cajas 0–4) --- */
+let Q=null,last='',ses={a:0,n:0},armed=false;
+function pickF(){
+  const w=F.map(x=>x.id===last?0:5-box(x.id));let r=Math.random()*w.reduce((a,b)=>a+b,0);
+  for(let i=0;i<F.length;i++){r-=w[i];if(r<=0)return F[i]}
+  return F[0];
+}
+function newQ(){
+  const x=pickF();last=x.id;
+  const t=['sil','rasgo','orden'][Math.floor(Math.random()*3)];
+  if(t==='orden'){
+    const oth=shuffle(O.filter(o=>o.id!==x.o)).slice(0,3);
+    Q={f:x,ans:x.o,vis:'',opts:shuffle([OM[x.o],...oth]).map(o=>({id:o.id,a:o.es,b:o.com})),
+       p:`¿A qué orden pertenece <b>${esc(x.es)}</b> <i>${esc(x.la)}</i>?`};
+  }else{
+    const dis=(t==='sil'?[...shuffle(F.filter(y=>y.o===x.o&&y.id!==x.id)),...shuffle(F.filter(y=>y.o!==x.o))]:shuffle(F.filter(y=>y.id!==x.id))).slice(0,3);
+    const uniq=x.r.filter(r=>!dis.some(d=>d.r.includes(r)));
+    const rs=shuffle(uniq.length?uniq:x.r).slice(0,2);
+    Q={f:x,ans:x.id,opts:shuffle([x,...dis]).map(y=>({id:y.id,a:y.es,b:y.la})),
+       vis:t==='sil'?`<div class="neutral" style="max-width:300px;margin:0 auto 12px">${sil(x.s)}</div>`:'',
+       p:t==='sil'?'¿De qué familia es esta silueta?':`¿Qué familia cumple esto?<ul>${rs.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>`};
+  }
+  Q.done=false;
+}
+function vEst(){
+  if(!Q)newQ();
+  const x=Q.f;
+  let h=`<h2>Estudiar</h2><p class="mono">${ses.a} de ${ses.n} acertadas en esta sesión</p><div class="card">${Q.vis}<p class="q">${Q.p}</p>`;
+  h+=Q.opts.map(o=>{let c='opt';if(Q.done){if(o.id===Q.ans)c+=' ok';else if(o.id===Q.pick)c+=' bad'}return `<button class="${c}" data-a="${o.id}" ${Q.done?'disabled':''}>${esc(o.a)}<small>${esc(o.b)}</small></button>`}).join('');
+  if(Q.done)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px"><div style="max-width:300px;margin:0 auto">${sil(x.s,x.es)}</div><h3>${esc(x.es)} <span class="la" style="font-weight:400">${esc(x.la)}</span></h3><p class="mono">${OM[x.o].es} · dominio ${box(x.id)}/4</p><p class="hook">${esc(x.g)}</p><button class="btn pri" data-next="1">Siguiente</button></div>`;
+  $('#v-estudiar').innerHTML=h+'</div>';
+}
+function answer(id){
+  if(Q.done)return;
+  Q.done=true;Q.pick=id;ses.n++;
+  const ok=id===Q.ans;if(ok)ses.a++;
+  S.boxes[Q.f.id]=ok?Math.min(4,box(Q.f.id)+1):0;save();paintHead();vEst();
+  const b=$('[data-next]');if(b)b.scrollIntoView({block:'nearest'});
+}
+
+/* --- navegación --- */
+const VIEWS={plan:vPlan,clave:vClave,explorar:vExp,estudiar:vEst};
+let cur='';
+function go(v){
+  if(!VIEWS[v])v='plan';
+  cur=v;
+  for(const k in VIEWS)$('#v-'+k).hidden=k!==v;
+  document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  VIEWS[v]();window.scrollTo(0,0);
+  if(location.hash!=='#'+v)location.hash=v;
+}
+addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(v!==cur)go(v)});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.v||d.go)go(d.v||d.go);
+  else if(d.k!==undefined){if(d.k==='reset')kp=[];else if(d.k==='back')kp.pop();else kp.push(d.k==='1');vClave()}
+  else if(d.open){openO=d.open;ftag='';go('explorar');const el=document.querySelector(`[data-o="${openO}"]`);if(el)el.scrollIntoView({block:'start'})}
+  else if(d.tag!==undefined){ftag=ftag===d.tag?'':d.tag;vExp()}
+  else if(d.a)answer(d.a);
+  else if(d.next){newQ();vEst();window.scrollTo(0,0)}
+  else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{}};save();armed=false;paintHead();vPlan()}}
+});
+document.addEventListener('change',e=>{const t=e.target.dataset&&e.target.dataset.t;if(t){S.plan[t]=e.target.checked;save();count()}});
+paintHead();
+go(location.hash.slice(1)||'plan');
+</script>
