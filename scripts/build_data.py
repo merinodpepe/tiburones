@@ -2,7 +2,7 @@
 import json,re
 sp=json.load(open('species_raw.json'))
 im={}
-for f in ('images.json','images_inat.json'):
+for f in ('images.json','images_inat.json','images_extra.json'):
     try: im.update({k:v for k,v in json.load(open(f)).items() if k not in im})
     except Exception: pass
 src=open('../js/data.js').read()
