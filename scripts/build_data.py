@@ -1,8 +1,10 @@
 """species_raw.json + images.json + familias de js/data.js -> ../data/species.json"""
 import json,re
 sp=json.load(open('species_raw.json'))
-try: im=json.load(open('images.json'))
-except Exception: im={}
+im={}
+for f in ('images.json','images_inat.json'):
+    try: im.update({k:v for k,v in json.load(open(f)).items() if k not in im})
+    except Exception: pass
 src=open('../js/data.js').read()
 fam={m.group(2):m.group(1) for m in re.finditer(r"^f\('(\w+)','\w+','[^']*','(\w+)'",src,re.M)}
 ordmap={'Hexanchiformes':'HEX','Squaliformes':'SQU','Echinorhiniformes':'ECH','Pristiophoriformes':'PRI','Squatiniformes':'SQT','Heterodontiformes':'HET','Orectolobiformes':'ORE','Lamniformes':'LAM','Carcharhiniformes':'CAR'}

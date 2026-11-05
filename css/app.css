@@ -142,4 +142,15 @@ a{color:var(--acc)}
 .shots img{display:block;width:100%;height:90px;object-fit:cover;border-radius:10px;background:var(--line)}
 
 .hero{display:flex;align-items:center;justify-content:space-between;gap:14px}
-.logo{width:clamp(110px,32vw,170px);height:auto;flex:none;border-radius:26%;box-shadow:0 14px 30px -12px rgba(0,0,0,.45);transform:rotate(4deg)}
+.logo{width:clamp(110px,32vw,170px);height:auto;flex:none;border-radius:22%;box-shadow:0 14px 30px -12px rgba(0,0,0,.45)}
+
+/* aprendizaje visual */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.popt{padding:0;border:2.5px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;cursor:pointer;text-align:left;color:var(--ink);font:inherit;transition:transform .1s,border-color .15s}
+.popt:active:not(:disabled){transform:scale(.98)}
+.popt img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--line)}
+.popt span{display:block;padding:8px 10px;font-size:14px;font-weight:600;line-height:1.2}
+.popt small{display:block;font-weight:400;font-style:italic;color:var(--mute)}
+.popt.ok{border-color:var(--ok)}.popt.bad{border-color:var(--bad);opacity:.85}
+.popt:disabled{cursor:default}
+.ph{width:92px;height:68px}
