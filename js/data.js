@@ -149,3 +149,12 @@ f('sph','CAR','Cornudas','Sphyrnidae',10,{hb:12,sn:'round',x:'hammer',d1:22,d2:8
  ['Cabeza aplanada en martillo (cefalofoil)','Ojos en los extremos de la cabeza','Primera dorsal muy alta','Membrana nictitante'],
  'Cabeza en martillo con los ojos en las puntas.',
  [['Cornuda gigante','Sphyrna mokarran'],['Cornuda cruz','Sphyrna zygaena']],['Hocico/cabeza rara']);
+
+f('pen','CAR','Pintarrojas de profundidad','Pentanchidae',69,{hb:7,sn:'round',d1:9,d2:8,pec:10,deco:'spots'},
+ ['Gatos pequeños, la mayoría de aguas profundas','Ojos alargados y dorsales retrasadas','Ponen huevos en cápsulas córneas','Hasta 2013 se contaban dentro de Scyliorhinidae'],
+ 'Gatos de profundidad: antes eran pintarrojas.',
+ [],['Aguas profundas']);
+f('gal','CAR','Tiburón tigre','Galeocerdonidae',1,{hb:15,sn:'blunt',d1:17,d2:8,pec:16,deco:'bands'},
+ ['Una sola especie viva','Rayas verticales que se difuminan con la edad','Hocico romo y cabeza ancha','Dientes con muesca, como cresta de gallo'],
+ 'Rayas de tigre y hocico romo: familia de una sola especie.',
+ []);

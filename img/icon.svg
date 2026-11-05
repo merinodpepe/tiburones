@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#12222A"/><path d="M70 300C140 190 270 170 340 210C390 150 420 120 430 90C440 160 420 220 390 250C430 270 450 300 470 340C400 320 380 320 340 330C250 380 130 370 70 300Z" fill="#E3BC55"/><circle cx="150" cy="275" r="9" fill="#12222A"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#12222A"/>
+  <path d="M0 410C80 380 150 440 256 410S430 380 512 410V512H0Z" fill="#0B6F7A" opacity=".55"/>
+  <!-- aleta de tiburón sobre el lomo -->
+  <path d="M236 150C262 110 298 82 330 60C326 100 322 130 312 168Z" fill="#E3BC55"/>
+  <!-- patas -->
+  <rect x="170" y="330" width="26" height="82" rx="12" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <rect x="222" y="338" width="26" height="76" rx="12" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <rect x="300" y="338" width="26" height="76" rx="12" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <rect x="352" y="330" width="26" height="82" rx="12" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <!-- lana -->
+  <g fill="#F4F1EA">
+    <circle cx="200" cy="250" r="62"/><circle cx="262" cy="222" r="68"/><circle cx="326" cy="250" r="62"/>
+    <circle cx="180" cy="300" r="52"/><circle cx="250" cy="312" r="58"/><circle cx="326" cy="304" r="56"/><circle cx="370" cy="270" r="44"/>
+  </g>
+  <!-- cabeza -->
+  <ellipse cx="132" cy="266" rx="44" ry="52" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <path d="M96 238C70 226 58 244 72 262C82 266 92 258 100 250Z" fill="#12222A" stroke="#F4F1EA" stroke-width="6"/>
+  <circle cx="120" cy="254" r="7" fill="#F4F1EA"/><circle cx="121" cy="255" r="3" fill="#12222A"/>
+  <path d="M104 296C116 304 130 304 140 294" stroke="#F4F1EA" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M152 214C176 200 196 214 190 236C172 236 158 230 152 214Z" fill="#F4F1EA"/>
+</svg>
