@@ -1,5 +1,8 @@
 """species_raw.json + images.json + familias de js/data.js -> ../data/species.json"""
 import json,re
+from fbfmt import habitat,clima
+try: FB=json.load(open('fishbase_all.json'))
+except Exception: FB={}
 sp=json.load(open('species_raw.json'))
 im={}
 for f in ('images.json','images_inat.json','images_extra.json'):
@@ -15,6 +18,10 @@ for s in sorted(sp,key=lambda s:(s['order'],s['family'],s['genus'],s['name'])):
     es=s['es'] if s['es'] and s['es']!=s['name'] else ''
     en=s['en'] if s['en'] and s['en']!=s['name'] else ''
     rec={'id':s['wd'],'n':s['name'],'g':s['genus'],'f':f,'es':es,'en':en,'iucn':s['iucn'] or '','fb':s['fb'] or '','img':im.get(s['wd'])}
+    d=FB.get(s['wd'],{})
+    if d:
+        h,dep=habitat(d)
+        rec.update({k:v for k,v in {'hab':h,'dep':dep,'zona':clima(d),'len':d.get('len_cm'),'kg':d.get('w_kg')}.items() if v})
     out.append(rec)
 print(len(out),'especies; familias sin mapa:',miss)
 print('con foto',sum(1 for r in out if r['img']),'con nombre es',sum(1 for r in out if r['es']),'con nombre en',sum(1 for r in out if r['en']))

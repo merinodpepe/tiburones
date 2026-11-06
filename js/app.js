@@ -4,7 +4,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const OM=Object.fromEntries(O.map(o=>[o.id,o])), FM=Object.fromEntries(F.map(x=>[x.id,x]));
 let S={boxes:{},plan:{},sp:{},spb:{},set:{lvl:'easy',scope:'auto',unl:4}};
 try{Object.assign(S,JSON.parse(localStorage.getItem('pf-tiburones-v1')||'{}'))}catch(e){}
-S.set=Object.assign({lvl:'easy',scope:'auto',unl:4},S.set||{});
+S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10},S.set||{});S.srs=S.srs||{};S.hist=S.hist||{};S.day=S.day||{d:0,n:0};
 const save=()=>{try{localStorage.setItem('pf-tiburones-v1',JSON.stringify(S))}catch(e){}};
 const box=id=>S.boxes[id]||0;
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -15,8 +15,8 @@ const tagsOf=x=>NOANAL.includes(x.o)?['Sin aleta anal',...x.t]:x.t;
 /* --- cabecera: una celda por familia, más opaca cuanto mejor la sabes --- */
 function paintHead(){
   $('#strip').style.gridTemplateColumns=`repeat(${F.length},1fr)`;
-  $('#strip').innerHTML=F.map(x=>`<i class="oc" style="--h:${OM[x.o].h};opacity:${.2+.2*box(x.id)}"></i>`).join('');
-  $('#pc').textContent=`${F.filter(x=>box(x.id)>=3).length} de ${F.length} familias · ${SP.filter(x=>S.sp[x.id]).length} de ${SP.length} especies`;
+  $('#strip').innerHTML=F.map(x=>`<i class="oc" style="--h:${OM[x.o].h};opacity:${.2+.2*famLevel(x.id)}"></i>`).join('');
+  $('#pc').textContent=`${knownCount('f')} de ${F.length} familias · ${knownCount('s')} de ${SP.length} especies`;
   $('#pt').textContent=`${O.length} órdenes`;
 }
 
@@ -26,8 +26,8 @@ const PM=()=>Object.fromEntries(PARTS.map(p=>[p.id,p]));
 const partFig=p=>p?`<figure class="part"><img src="${esc(p.file)}" alt="${esc(p.t)}" loading="lazy"><figcaption><b>${esc(p.t)}</b><br>${esc(p.d)}<br><a class="cr" href="${esc(p.url)}" target="_blank" rel="noopener">foto: ${esc((p.author||'').slice(0,40))} · ${esc(p.license)}</a></figcaption></figure>`:'';
 const IUCN={'critically endangered':'CR','endangered':'EN','vulnerable':'VU','near threatened':'NT','least concern':'LC','data deficient':'DD'};
 const iu=x=>IUCN[(x.iucn||'').toLowerCase()]||'';
-const cname=x=>x.es||x.en||'';
-const nmS=x=>cname(x)?`<b>${esc(cname(x))}</b> <span class="la">${esc(x.n)}</span>`:`<span class="la">${esc(x.n)}</span>`;
+const cname=x=>x.n;
+const nmS=x=>`<b><i>${esc(x.n)}</i></b>`;
 function initSp(){
   SPF={};SPM={};
   SP.forEach(x=>{(SPF[x.f]=SPF[x.f]||[]).push(x);SPM[x.id]=x});
@@ -40,7 +40,7 @@ function spList(fid){
   const L=SPF[fid]||[];const by={};L.forEach(x=>(by[x.g]=by[x.g]||[]).push(x));
   return Object.keys(by).sort().map(g=>`<div class="gen"><div class="mono"><i>${esc(g)}</i> · ${by[g].length}</div>${by[g].map(spRow).join('')}</div>`).join('');
 }
-const spRow=x=>`<div class="sp"><label class="spk"><input type="checkbox" data-sp="${x.id}" ${S.sp[x.id]?'checked':''} aria-label="La sé: ${esc(x.n)}"></label>${photo(x)}<div class="spt">${nmS(x)}${x.en&&x.es?`<div class="mono">${esc(x.en)}</div>`:''}<div class="row" style="gap:6px;margin-top:2px">${iu(x)?`<span class="tag iu iu-${iu(x)}">${iu(x)}</span>`:''}${credit(x)}</div></div></div>`;
+const spRow=x=>`<div class="sp"><label class="spk"><input type="checkbox" data-sp="${x.id}" ${S.sp[x.id]?'checked':''} aria-label="La sé: ${esc(x.n)}"></label>${photo(x).replace('<img ','<img data-sheet="'+x.id+'" ')}<div class="spt" data-sheet="${x.id}">${nmS(x)}<div class="row" style="gap:6px;margin-top:2px">${iu(x)?`<span class="tag iu iu-${iu(x)}">${iu(x)}</span>`:''}${credit(x)}</div></div></div>`;
 
 /* --- familias --- */
 const nm=e=>e[0]?`<b>${esc(e[0])}</b> <span class="la">${esc(e[1])}</span>`:`<span class="la">${esc(e[1])}</span>`;
@@ -74,11 +74,10 @@ const PH=[
  {k:'p7',t:'Siempre',h:'Repaso espaciado',d:'Vuelve a Estudiar los días 1, 3, 7, 14 y 30 después de cada bloque. La app prioriza solas las familias que fallas.',go:'estudiar',tasks:[]}
 ];
 function count(){const t=PH.reduce((a,p)=>a+p.tasks.length,0),d=Object.values(S.plan).filter(Boolean).length;const e=$('#pcount');if(e)e.textContent=`${d} de ${t} tareas`}
-function vPlan(){
-  $('#v-plan').innerHTML=`<h2>Plan de 8 semanas</h2><p class="lede">36 familias en 9 órdenes y 571 especies. Primero aprendes a mirar (aletas, boca, branquias), luego los nombres, y al final las especies, que cuelgan de su familia.</p>`+
+function planHtml(){
+  return `<h2>Plan de 8 semanas</h2><p class="lede">36 familias en 9 órdenes y 571 especies. Primero aprendes a mirar (aletas, boca, branquias), luego los nombres, y al final las especies, que cuelgan de su familia.</p>`+
   PH.map(p=>`<div class="card phase"><div class="mono">${p.t}</div><h3>${p.h}</h3><p>${esc(p.d)}</p>${p.tasks.map(t=>{const id=p.k+t[0];return `<label class="task"><input type="checkbox" data-t="${id}" ${S.plan[id]?'checked':''}><span>${esc(t[1])}</span></label>`}).join('')}${p.go?`<div class="row" style="margin-top:10px"><button class="btn" data-go="${p.go}">Ir a ${({clave:"Clave",explorar:"Explorar",estudiar:"Estudiar"})[p.go]}</button></div>`:''}</div>`).join('')+
   `<p class="mono" id="pcount"></p><div class="row" style="margin-top:6px"><button class="btn" data-reset="1">Borrar mi progreso</button></div>`;
-  count();
 }
 
 /* --- CLAVE: [pregunta, si, no, etiqueta] --- */
@@ -141,7 +140,7 @@ function newSpQ(){
   for(let i=0;i<pool.length;i++){r-=w[i];if(r<=0){x=pool[i];break}}
   last=x.id;const f=FM[x.f];
   const dis=[...shuffle(SP.filter(y=>y.g===x.g&&y.id!==x.id)),...shuffle(SP.filter(y=>y.f===x.f&&y.g!==x.g)),...shuffle(SP.filter(y=>y.f!==x.f))].slice(0,3);
-  Q={sp:x,f,ans:x.id,opts:shuffle([x,...dis]).map(y=>({id:y.id,a:cname(y)||y.n,b:x.img&&cname(y)?y.n:''})),
+  Q={sp:x,f,ans:x.id,opts:shuffle([x,...dis]).map(y=>({id:y.id,a:cname(y)||y.n,b:''})),
      vis:x.img?`<img class="big" src="${esc(x.img.file)}" alt="Foto de tiburón a identificar">`:`<div style="max-width:300px;margin:0 auto 12px" class="neutral">${sil(f.s)}</div>`,
      p:x.img?'¿Qué especie es?':`¿Qué especie de <b>${esc(f.es)}</b> es?`,done:false};
   if(!x.img)Q.p=`¿Cómo se llama <i>${esc(x.n)}</i>? <span class="la">(${esc(f.es)})</span>`;
@@ -156,26 +155,28 @@ function maybeUnlock(){
   if(p.length&&m/p.length>=.7){S.set.unl=Math.min(FAMORD.length,S.set.unl+4);return `Nuevo bloque desbloqueado: ahora ${vpool().length} especies.`}
   return '';
 }
-function newVerQ(){
-  const pool=vpool();const x=wpick(pool.filter(y=>y.id!==last));last=x.id;
+function newVerQ(x0){
+  const pool=x0?SP.filter(y=>y.img):vpool();const x=x0||wpick(pool.filter(y=>y.id!==last));last=x.id;
   const same=g=>pool.filter(y=>y.id!==x.id&&g(y));
   const n=LVL[S.set.lvl];
   const dis=n?[...shuffle(same(y=>y.g===x.g)),...shuffle(same(y=>y.f===x.f&&y.g!==x.g)),...shuffle(same(y=>FM[y.f].o===FM[x.f].o&&y.f!==x.f)),...shuffle(same(y=>FM[y.f].o!==FM[x.f].o))].slice(0,n-1):[];
-  Q={sp:x,f:FM[x.f],ans:x.id,photo:true,hard:!n,done:false,
+  Q={sp:x,f:FM[x.f],ans:x.id,photo:true,hard:!n,done:false,key:'s:'+x.id,
      vis:`<img class="big" src="${esc(x.img.file)}" alt="Tiburón a identificar">`,
-     opts:shuffle([x,...dis]).map(y=>({id:y.id,a:cname(y)||y.n,b:cname(y)?y.n:''})),
+     opts:shuffle([x,...dis]).map(y=>({id:y.id,a:cname(y)||y.n,b:''})),
      p:'¿Qué tiburón es?'};
 }
 const lvlBar=()=>{const p=vpool(),m=p.filter(x=>(S.spb[x.id]||0)>=3).length;return `<div class="row" style="margin-bottom:6px">${[['easy','Fácil · 3'],['mid','Medio · 6'],['hard','Difícil · buscar']].map(([k,l])=>`<button class="chip" aria-pressed="${S.set.lvl===k}" data-lvl="${k}">${l}</button>`).join('')}</div><div class="row" style="margin-bottom:12px"><button class="chip" aria-pressed="${S.set.scope==='auto'}" data-scope="auto">Por bloques</button><button class="chip" aria-pressed="${S.set.scope==='all'}" data-scope="all">Todas (${SP.filter(x=>x.img).length})</button><span class="mono">${p.length} especies · ${m} dominadas</span></div>`};
 function hardSearch(){
   const t=($('#ans')||{value:''}).value.trim().toLowerCase(),el=$('#ares');if(!el||Q.done)return;
   if(t.length<2){el.innerHTML='';return}
-  el.innerHTML=SP.filter(x=>(x.n+' '+x.es+' '+x.en).toLowerCase().includes(t)).slice(0,8).map(x=>`<button class="opt" data-a="${x.id}">${esc(cname(x)||x.n)}<small>${esc(x.n)}</small></button>`).join('')||'<p class="mono">Sin resultados</p>';
+  el.innerHTML=SP.filter(x=>(x.n+' '+x.es+' '+x.en).toLowerCase().includes(t)).slice(0,8).map(x=>`<button class="opt" data-a="${x.id}">${esc(x.n)}</button>`).join('')||'<p class="mono">Sin resultados</p>';
 }
-function newQ(){
+function newQ(x0){
+  if(mode==='hoy'&&!x0)return newHoyQ();
+  if(mode==='gen'&&SP.length&&!x0)return newGenQ();
   if(mode==='ver'&&SP.length)return newVerQ();
   if(mode==='sp'&&SP.length)return newSpQ();
-  const x=pickF();last=x.id;
+  const x=x0||pickF();last=x.id;
   const t=['sil','rasgo','orden'][Math.floor(Math.random()*3)];
   if(t==='orden'){
     const oth=shuffle(O.filter(o=>o.id!==x.o)).slice(0,3);
@@ -191,7 +192,7 @@ function newQ(){
   }
   Q.done=false;
 }
-const chips=()=>`<div class="row" style="margin-bottom:12px">${[['ver','Ver'],['card','Cartas'],['fam','Familias'],['sp','Nombres'],['parts','Partes']].map(([m,l])=>`<button class="chip" aria-pressed="${mode===m}" data-mode="${m}">${l}</button>`).join('')}</div>`;
+const chips=()=>`<div class="row" style="margin-bottom:12px">${[['ver','Ver'],['gen','Géneros'],['card','Cartas'],['fam','Familias'],['sp','Nombres'],['parts','Partes']].map(([m,l])=>`<button class="chip" aria-pressed="${mode===m}" data-mode="${m}">${l}</button>`).join('')}</div>`;
 const famPhotos=fid=>{const L=(SPF[fid]||[]).filter(x=>x.img);const pick=[];const gs=new Set();for(const x of L){if(!gs.has(x.g)){gs.add(x.g);pick.push(x)}if(pick.length>=3)break}return pick.length?`<div class="shots">${pick.map(x=>`<figure><img loading="lazy" src="${esc(x.img.file)}" alt="${esc(cname(x)||x.n)}"><figcaption>${nmS(x)}</figcaption></figure>`).join('')}</div>`:''};
 const ORDPART={HEX:['bran'],SQU:['espina'],ECH:['dent'],PRI:['sierra'],SQT:['plano'],HET:['espina'],ORE:['barb'],LAM:['nict','dientes'],CAR:['nict']};
 const partsFor=x=>{const m=PM(),L=(ORDPART[x.o]||[]).map(i=>m[i]).filter(Boolean);return L.length?`<p class="mono" style="margin-top:12px">Así se ve la clave de este grupo</p>${L.map(partFig).join('')}`:''};
@@ -210,22 +211,25 @@ function vEst(){
   if(mode==='parts')return vParts();
   if(mode==='card')return vCard();
   if(!Q)newQ();
+  if(Q.empty)return vHoyDone();
   const x=Q.f;
-  let h=`<h2>Estudiar</h2>${chips()}${mode==='ver'?lvlBar():''}<p class="mono">${ses.a} de ${ses.n} acertadas en esta sesión</p><div class="card">${Q.vis}<p class="q">${Q.p}</p>`;
+  let h=mode==='hoy'?hoyHead()+`<div class="card">${Q.vis}<p class="q">${Q.p}</p>`:`<h2>Estudiar</h2>${chips()}${(mode==='ver'||mode==='gen')?lvlBar():''}<p class="mono">${ses.a} de ${ses.n} acertadas en esta sesión</p><div class="card">${Q.vis}<p class="q">${Q.p}</p>`;
   if(Q.hard&&!Q.done)h+=`<input id="ans" class="search" type="search" placeholder="Escribe el nombre y elígelo" autocomplete="off"><div id="ares"></div>`;
   else if(Q.grid)h+=`<div class="pgrid">${Q.opts.map(o=>{let c='popt';if(Q.done){if(o.id===Q.ans)c+=' ok';else if(o.id===Q.pick)c+=' bad'}return `<button class="${c}" data-a="${o.id}" ${Q.done?'disabled':''} aria-label="Foto ${esc(o.a)}"><img src="${esc(o.img.file)}" alt="${Q.done?esc(o.a):'Foto de tiburón'}">${Q.done?`<span>${esc(o.a)}<small>${esc(o.b)}</small></span>`:''}</button>`}).join('')}</div>`;
   else h+=Q.opts.map(o=>{let c='opt';if(Q.done){if(o.id===Q.ans)c+=' ok';else if(o.id===Q.pick)c+=' bad'}return `<button class="${c}" data-a="${o.id}" ${Q.done?'disabled':''}>${esc(o.a)}<small>${esc(o.b)}</small></button>`}).join('');
-  if(Q.done&&Q.sp)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px">${partsFor(x)}<h3>${Q.pick===Q.ans?'<span style="color:var(--ok)">✓</span>':'<span style="color:var(--bad)">✗ Era</span>'} ${nmS(Q.sp)}</h3>${Q.msg?`<p class="hook">${esc(Q.msg)}</p>`:''}<p class="mono">${esc(x.es)} · género <i>${esc(Q.sp.g)}</i> · dominio ${S.spb[Q.sp.id]||0}/5</p>${credit(Q.sp)}<div style="margin-top:10px"><button class="btn pri" data-next="1">Siguiente</button></div></div>`;
+  if(Q.done&&Q.gen)h+=genFeedback(x);
+  else if(Q.done&&Q.sp)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px">${partsFor(x)}<h3>${Q.pick===Q.ans?'<span style="color:var(--ok)">✓</span>':'<span style="color:var(--bad)">✗ Era</span>'} ${nmS(Q.sp)}</h3>${Q.msg?`<p class="hook">${esc(Q.msg)}</p>`:''}<p class="mono">${esc(x.es)} · género <i>${esc(Q.sp.g)}</i> · dominio ${S.spb[Q.sp.id]||0}/5</p>${credit(Q.sp)}<div class="row" style="margin-top:10px"><button class="btn pri" data-next="1">Siguiente</button><button class="btn" data-sheet="${Q.sp.id}">Ficha</button>${Q.pick!==Q.ans&&SPM[Q.pick]?`<button class="btn" data-cmp="${Q.sp.id},${Q.pick}">Comparar</button>`:''}</div></div>`;
   else if(Q.done)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px">${famPhotos(x.id)}${partsFor(x)}<div style="max-width:300px;margin:0 auto">${sil(x.s,x.es)}</div><h3>${esc(x.es)} <span class="la" style="font-weight:400">${esc(x.la)}</span></h3><p class="mono">${OM[x.o].es} · dominio ${box(x.id)}/4</p><p class="hook">${esc(x.g)}</p><button class="btn pri" data-next="1">Siguiente</button></div>`;
-  $('#v-estudiar').innerHTML=h+'</div>';
+  $(mode==='hoy'?'#v-hoy':'#v-estudiar').innerHTML=h+'</div>';
 }
 function answer(id){
   if(Q.done)return;
   Q.done=true;Q.pick=id;ses.n++;
   const ok=id===Q.ans;if(ok)ses.a++;
   if(Q.sp){S.spb[Q.sp.id]=ok?Math.min(5,(S.spb[Q.sp.id]||0)+1):0;if(S.spb[Q.sp.id]>=3)S.sp[Q.sp.id]=true}
-  else S.boxes[Q.f.id]=ok?Math.min(4,box(Q.f.id)+1):0;
-  if(Q.photo)Q.msg=maybeUnlock();
+  else if(!Q.gen)S.boxes[Q.f.id]=ok?Math.min(4,box(Q.f.id)+1):0;
+  if(Q.photo&&Q.sp)Q.msg=maybeUnlock();
+  srsGrade(Q.key||(Q.gen?'g:'+Q.gen:Q.sp?'s:'+Q.sp.id:'f:'+Q.f.id),ok);
   save();paintHead();vEst();
   const b=$('[data-next]');if(b)b.scrollIntoView({block:'nearest'});
 }
@@ -234,16 +238,17 @@ function answer(id){
 /* --- PENDIENTE: huecos del dataset + copia de seguridad --- */
 const gl=(t,l)=>`<details style="border-left-width:1px"><summary style="min-height:48px"><div><b>${t}</b> <span class="mono">${l.length}</span></div></summary><div class="fb">${l.slice(0,60).map(x=>`<div style="padding:4px 0">${nmS(x)} ${links(x)}</div>`).join('')}${l.length>60?`<p class="mono">… y ${l.length-60} más</p>`:''}</div></details>`;
 const links=x=>`<span class="mono"><a href="https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(x.n)}&ns6=1" target="_blank" rel="noopener">Commons</a> · <a href="https://www.inaturalist.org/taxa/search?q=${encodeURIComponent(x.n)}" target="_blank" rel="noopener">iNat</a> · <a href="https://www.fishbase.se/summary/${encodeURIComponent(x.n.replace(' ','-'))}.html" target="_blank" rel="noopener">FishBase</a> · <a href="https://www.iucnredlist.org/search?query=${encodeURIComponent(x.n)}" target="_blank" rel="noopener">IUCN</a></span>`;
-function vPend(){
+function pendHtml(){
   const nf=SP.filter(x=>!x.img),ne=SP.filter(x=>!x.es),ni=SP.filter(x=>!iu(x)),nn=SP.filter(x=>!x.es&&!x.en);
-  $('#v-pendiente').innerHTML=`<h2>Pendiente</h2><p class="lede">Huecos del catálogo para investigar. Cada especie enlaza a Commons, iNaturalist, FishBase e IUCN. Solo se usan fotos con licencia libre (CC0, CC-BY, CC-BY-SA, dominio público).</p>`+
+  return `<h2>Pendiente</h2><p class="lede">Huecos del catálogo para investigar. Cada especie enlaza a Commons, iNaturalist, FishBase e IUCN. Solo se usan fotos con licencia libre (CC0, CC-BY, CC-BY-SA, dominio público).</p>`+
    gl('Sin foto libre',nf)+gl('Sin nombre común en español',ne)+gl('Sin nombre común en ningún idioma',nn)+gl('Sin estado IUCN',ni)+
    `<h2>Copia de seguridad</h2><p class="lede">Tu progreso vive solo en este navegador. Exporta un archivo para no perderlo o pasarlo a otro dispositivo.</p><div class="row"><button class="btn pri" data-export="1">Exportar progreso</button><label class="btn" style="display:inline-flex;align-items:center">Importar<input type="file" accept="application/json" id="imp" hidden></label></div><p class="mono" style="margin-top:14px">Datos: Wikidata (CC0). Fotos: Wikimedia Commons, autor y licencia en cada foto.</p>`;
 }
-const VIEWS={plan:vPlan,clave:vClave,explorar:vExp,estudiar:vEst,pendiente:vPend};
+const VIEWS={hoy:()=>{if(mode!=='hoy'){mode='hoy';Q=null}vEst()},clave:vClave,explorar:vExp,estudiar:()=>{if(mode==='hoy'){mode='ver';Q=null}vEst()},plan:()=>vProg()};
 let cur='';
 function go(v){
-  if(!VIEWS[v])v='plan';
+  if(v==='pendiente')v='plan';
+  if(!VIEWS[v])v='hoy';
   cur=v;
   for(const k in VIEWS)$('#v-'+k).hidden=k!==v;
   document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
@@ -264,11 +269,11 @@ document.addEventListener('click',e=>{
   else if(d.export){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='tiburones-progreso.json';a.click()}
   else if(d.a)answer(d.a);
   else if(d.next){newQ();vEst();window.scrollTo(0,0)}
-  else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{},sp:{},spb:{},set:{lvl:'easy',scope:'auto',unl:4}};save();armed=false;paintHead();vPlan()}}
+  else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{lvl:'easy',scope:'auto',unl:4,npd:10}};save();armed=false;paintHead();vProg()}}
 });
 document.addEventListener('input',e=>{if(e.target.id==='ans'){hardSearch();return}
   if(e.target.id==='q'){qtext=e.target.value;searchRes()}});
 document.addEventListener('change',e=>{
-  if(e.target.id==='imp'){const f=e.target.files[0];if(f)f.text().then(t=>{try{const j=JSON.parse(t);if(!j||typeof j!=='object'||!j.boxes)throw 0;S=Object.assign({boxes:{},plan:{},sp:{},spb:{},set:{lvl:'easy',scope:'auto',unl:4}},j);S.set=Object.assign({lvl:'easy',scope:'auto',unl:4},S.set||{});save();paintHead();vPend();alert('Progreso importado')}catch(_){alert('Archivo no válido')}});return}
+  if(e.target.id==='imp'){const f=e.target.files[0];if(f)f.text().then(t=>{try{const j=JSON.parse(t);if(!j||typeof j!=='object'||!j.boxes)throw 0;S=Object.assign({boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{}},j);S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10},S.set||{});save();paintHead();vProg();alert('Progreso importado')}catch(_){alert('Archivo no válido')}});return}
   if(e.target.dataset&&e.target.dataset.sp){S.sp[e.target.dataset.sp]=e.target.checked;save();paintHead();return}const t=e.target.dataset&&e.target.dataset.t;if(t){S.plan[t]=e.target.checked;save();count()}});
-Promise.all([fetch('data/species.json').then(r=>r.json()).catch(()=>[]),fetch('data/parts.json').then(r=>r.json()).catch(()=>[])]).then(([d,pp])=>{SP=d;PARTS=pp;initSp();paintHead();go(location.hash.slice(1)||'plan')});
+Promise.all([fetch('data/species.json').then(r=>r.json()).catch(()=>[]),fetch('data/parts.json').then(r=>r.json()).catch(()=>[])]).then(([d,pp])=>{SP=d;PARTS=pp;initSp();initLearn();paintHead();go(location.hash.slice(1)||'hoy')});
