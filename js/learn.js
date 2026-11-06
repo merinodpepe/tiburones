@@ -78,10 +78,12 @@ function newHoyQ(){
   Q.key=k;Q.done=false;
 }
 const namesChip=()=>`<div class="row" style="margin-bottom:10px"><span class="mono">Nombres</span>${[['es','Español'],['lat','Científico']].map(([k,l])=>`<button class="chip" aria-pressed="${(S.set.names||'es')===k}" data-names="${k}">${l}</button>`).join('')}</div>`;
+const LVT={easy:'Fácil',mid:'Medio',hard:'Difícil'};
+const lvlTxt=()=>(LVT[S.set.lvl]||'Fácil');
+const autoOn=()=>S.set.auto!==false;
 function hoyHead(){
   const due=dueKeys().length,nw=Math.min(allowance(),newCands().length);
-  return `<h2>Hoy</h2>${namesChip()}<div class="stats3"><div><b>${due}</b><span>para repasar</span></div><div><b>${nw}</b><span>nuevas</span></div><div><b>${streak()}</b><span>días de racha</span></div></div>
-  <div class="row" style="margin-bottom:12px">${[['easy','Fácil · 3'],['mid','Medio · 6'],['hard','Difícil · buscar']].map(([k,l])=>`<button class="chip" aria-pressed="${S.set.lvl===k}" data-lvl="${k}">${l}</button>`).join('')}</div>`;
+  return `<p class="stline"><b>${due}</b> repasar · <b>${nw}</b> nuevas · racha <b>${streak()}</b> · ${lvlTxt()}</p>`;
 }
 function vHoyDone(){
   const t=todayN(),tom=Object.values(S.srs).filter(c=>c.due===t+1).length,h=S.hist[dstr(t)]||{a:0,n:0};
@@ -160,10 +162,9 @@ function vProg(){
   const weak=Object.entries(S.srs).filter(([k,c])=>k[0]==='s'&&c.lap>0&&SPM[k.slice(2)]).sort((a,b)=>(b[1].lap-a[1].lap)||(a[1].i-b[1].i)).slice(0,8).map(e=>SPM[e[0].slice(2)]);
   const weakG=Object.entries(S.srs).filter(([k,c])=>k[0]==='g'&&c.lap>0&&GEN[k.slice(2)]).sort((a,b)=>b[1].lap-a[1].lap).slice(0,5).map(e=>e[0].slice(2));
   const acc=(()=>{let a=0,n=0;days.forEach(x=>{a+=x.h.a;n+=x.h.n});return n?Math.round(100*a/n):null})();
-  $('#v-plan').innerHTML=`<h2>Progreso</h2>${namesChip()}
+  $('#v-plan').innerHTML=`<h2>Progreso</h2>
    <div class="stats3"><div><b>${knownCount('f')}/${F.length}</b><span>familias</span></div><div><b>${knownCount('g')}/${GENL.length}</b><span>géneros</span></div><div><b>${spK}/${sp.length}</b><span>especies con foto</span></div></div>
-   <div class="card"><p class="mono">Últimos 7 días${acc!==null?` · ${acc}% de aciertos`:''} · racha ${streak()}</p><div class="bars7">${days.map(x=>`<div><i style="height:${Math.round(100*x.h.n/mx)}%"></i><span>${x.h.n||''}</span><em>${wk[new Date(x.d*DAYMS).getUTCDay()]}</em></div>`).join('')}</div>
-    <p class="mono" style="margin-top:10px">Nuevas por día</p><div class="row">${[5,10,20].map(n=>`<button class="chip" aria-pressed="${NPD()===n}" data-npd="${n}">${n}</button>`).join('')}</div></div>
+   <div class="card"><p class="mono">Últimos 7 días${acc!==null?` · ${acc}% de aciertos`:''} · racha ${streak()}</p><div class="bars7">${days.map(x=>`<div><i style="height:${Math.round(100*x.h.n/mx)}%"></i><span>${x.h.n||''}</span><em>${wk[new Date(x.d*DAYMS).getUTCDay()]}</em></div>`).join('')}</div></div>
    <div class="card"><p class="mono">Por orden (especies dominadas)</p>${byO.map(r=>`<div class="obar oc" style="--h:${r.o.h}"><span>${r.o.es}</span><div><i style="width:${Math.round(100*r.k/r.n)}%"></i></div><b>${r.k}/${r.n}</b></div>`).join('')}</div>
    <div class="card"><p class="mono">Tus puntos débiles</p>${weak.length||weakG.length?`${weak.map(x=>`<div class="sp" data-sheet="${x.id}">${photo(x)}<div class="spt">${nmS(x)}<div class="mono">${S.srs['s:'+x.id].lap} fallos</div></div></div>`).join('')}${weakG.map(g=>`<div class="sp"><div class="spt"><b><i>${esc(g)}</i></b><div class="mono">género · ${S.srs['g:'+g].lap} fallos</div></div></div>`).join('')}`:'<p class="la">Aún no has fallado nada. Responde en Hoy y aquí saldrán las que más cuestan.</p>'}</div>
    <details><summary><div><h3>Plan de semanas</h3></div></summary><div class="fb">${planHtml()}</div></details>
@@ -171,6 +172,17 @@ function vProg(){
   count();
 }
 
+/* --- ajustes --- */
+const seg=(lab,attr,cur,opts)=>`<div class="set"><p class="mono">${lab}</p><div class="row">${opts.map(([k,l])=>`<button class="chip" aria-pressed="${String(cur)===String(k)}" data-${attr}="${k}">${l}</button>`).join('')}</div></div>`;
+function openSettings(){
+  showSheet(`<button class="btn sheet-x" data-close="1">Cerrar</button><h2 style="margin-top:0">Ajustes</h2>
+   ${seg('Nombres','names',S.set.names||'es',[['es','Español'],['lat','Científico']])}
+   ${seg('Dificultad','lvl',S.set.lvl,[['easy','Fácil · 3 opciones'],['mid','Medio · 6'],['hard','Difícil · buscar']])}
+   ${seg('Avance','auto',autoOn()?'1':'0',[['1','Automático al acertar'],['0','Manual']])}
+   ${seg('Especies nuevas por día','npd',NPD(),[[5,'5'],[10,'10'],[20,'20']])}
+   ${seg('Modo Ver','scope',S.set.scope,[['auto','Por bloques'],['all','Todas']])}
+   <p class="mono" style="margin-top:14px">Los cambios se guardan solos.</p>`);
+}
 /* --- eventos propios --- */
 document.addEventListener('click',e=>{
   if(e.target.closest('a'))return;
@@ -178,9 +190,14 @@ document.addEventListener('click',e=>{
   if(s&&!e.target.closest('[data-close]')){openSheet(s.dataset.sheet);return}
   const c=e.target.closest('[data-cmp]');if(c){openCmp(c.dataset.cmp.split(','));return}
   if(e.target.closest('[data-close]')){closeSheet();return}
-  const nm=e.target.closest('[data-names]');if(nm){S.set.names=nm.dataset.names;save();Q=null;go(cur);return}
-  const n=e.target.closest('[data-npd]');if(n){S.set.npd=+n.dataset.npd;save();vProg();return}
+  const inSet=!!e.target.closest('#sheet')&&!$('#sheet').hidden&&$('#sheet h2')&&$('#sheet h2').textContent==='Ajustes';
+  if(e.target.closest('[data-settings]')){openSettings();return}
+  const nm=e.target.closest('[data-names]');if(nm){S.set.names=nm.dataset.names;save();Q=null;go(cur);if(inSet)openSettings();return}
+  const n=e.target.closest('[data-npd]');if(n){S.set.npd=+n.dataset.npd;save();if(inSet)openSettings();else vProg();return}
+  const au=e.target.closest('[data-auto]');if(au){S.set.auto=au.dataset.auto==='1';save();openSettings();return}
+  if(inSet&&e.target.closest('[data-lvl],[data-scope]')){setTimeout(openSettings,0);return}
   const m=e.target.closest('[data-hoymore]');if(m){S.day.n=Math.max(0,S.day.n-5);save();Q=null;vEst();return}
   const g=e.target.closest('[data-gostudy]');if(g){setTimeout(()=>go('estudiar'),0)}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+document.addEventListener('change',e=>{if(e.target.id==='modesel'){clearTimeout(AUTO);mode=e.target.value;Q=null;CD=null;vEst();window.scrollTo(0,0)}});

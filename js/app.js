@@ -193,7 +193,7 @@ function newQ(x0){
   }
   Q.done=false;
 }
-const chips=()=>`<div class="row" style="margin-bottom:12px">${[['ver','Ver'],['gen','Géneros'],['card','Cartas'],['fam','Familias'],['sp','Nombres'],['parts','Partes']].map(([m,l])=>`<button class="chip" aria-pressed="${mode===m}" data-mode="${m}">${l}</button>`).join('')}</div>`;
+const chips=()=>`<div class="row" style="margin-bottom:10px"><label class="mono" for="modesel">Modo</label><select id="modesel" class="sel">${[['ver','Ver · foto → nombre'],['gen','Géneros'],['card','Cartas'],['fam','Familias'],['sp','Nombres'],['parts','Partes']].map(([m,l])=>`<option value="${m}" ${mode===m?'selected':''}>${l}</option>`).join('')}</select></div>`;
 const famPhotos=fid=>{const L=(SPF[fid]||[]).filter(x=>x.img);const pick=[];const gs=new Set();for(const x of L){if(!gs.has(x.g)){gs.add(x.g);pick.push(x)}if(pick.length>=3)break}return pick.length?`<div class="shots">${pick.map(x=>`<figure><img loading="lazy" src="${esc(x.img.file)}" alt="${esc(cname(x)||x.n)}"><figcaption>${nmS(x)}</figcaption></figure>`).join('')}</div>`:''};
 const ORDPART={HEX:['bran'],SQU:['espina'],ECH:['dent'],PRI:['sierra'],SQT:['plano'],HET:['espina'],ORE:['barb'],LAM:['nict','dientes'],CAR:['nict']};
 const partsFor=x=>{const m=PM(),L=(ORDPART[x.o]||[]).map(i=>m[i]).filter(Boolean);return L.length?`<p class="mono" style="margin-top:12px">Así se ve la clave de este grupo</p>${L.map(partFig).join('')}`:''};
@@ -214,15 +214,18 @@ function vEst(){
   if(!Q)newQ();
   if(Q.empty)return vHoyDone();
   const x=Q.f;
-  let h=mode==='hoy'?hoyHead()+`<div class="card">${Q.vis}<p class="q">${Q.p}</p>`:`<h2>Estudiar</h2>${chips()}${(mode==='ver'||mode==='gen')?lvlBar():''}<p class="mono">${ses.a} de ${ses.n} acertadas en esta sesión</p><div class="card">${Q.vis}<p class="q">${Q.p}</p>`;
+  let h=mode==='hoy'?hoyHead()+`<div class="card qcard">${Q.vis}<p class="q">${Q.p}</p>`:`${chips()}<p class="stline">${lvlTxt()} · ${ses.a}/${ses.n} esta sesión</p><div class="card qcard">${Q.vis}<p class="q">${Q.p}</p>`;
   if(Q.hard&&!Q.done)h+=`<input id="ans" class="search" type="search" placeholder="Escribe el nombre y elígelo" autocomplete="off"><div id="ares"></div>`;
   else if(Q.grid)h+=`<div class="pgrid">${Q.opts.map(o=>{let c='popt';if(Q.done){if(o.id===Q.ans)c+=' ok';else if(o.id===Q.pick)c+=' bad'}return `<button class="${c}" data-a="${o.id}" ${Q.done?'disabled':''} aria-label="Foto ${esc(o.a)}"><img src="${esc(o.img.file)}" alt="${Q.done?esc(o.a):'Foto de tiburón'}">${Q.done?`<span>${esc(o.a)}<small>${esc(o.b)}</small></span>`:''}</button>`}).join('')}</div>`;
   else h+=Q.opts.map(o=>{let c='opt';if(Q.done){if(o.id===Q.ans)c+=' ok';else if(o.id===Q.pick)c+=' bad'}return `<button class="${c}" data-a="${o.id}" ${Q.done?'disabled':''}>${esc(o.a)}<small>${esc(o.b)}</small></button>`}).join('');
-  if(Q.done&&Q.gen)h+=genFeedback(x);
+  const quick=Q.done&&Q.pick===Q.ans&&autoOn()&&!Q.msg&&(Q.sp||Q.gen||Q.f);
+  if(quick){}
+  else if(Q.done&&Q.gen)h+=genFeedback(x);
   else if(Q.done&&Q.sp)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px">${partsFor(x)}<h3>${Q.pick===Q.ans?'<span style="color:var(--ok)">✓</span>':'<span style="color:var(--bad)">✗ Era</span>'} ${nmS(Q.sp)}</h3>${Q.msg?`<p class="hook">${esc(Q.msg)}</p>`:''}<p class="mono">${esc(x.es)} · género <i>${esc(Q.sp.g)}</i> · dominio ${S.spb[Q.sp.id]||0}/5</p>${credit(Q.sp)}<div class="row" style="margin-top:10px"><button class="btn pri" data-next="1">Siguiente</button><button class="btn" data-sheet="${Q.sp.id}">Ficha</button>${Q.pick!==Q.ans&&SPM[Q.pick]?`<button class="btn" data-cmp="${Q.sp.id},${Q.pick}">Comparar</button>`:''}</div></div>`;
   else if(Q.done)h+=`<div class="oc" style="--h:${OM[x.o].h};margin-top:14px">${famPhotos(x.id)}${partsFor(x)}<div style="max-width:300px;margin:0 auto">${sil(x.s,x.es)}</div><h3>${esc(x.es)} <span class="la" style="font-weight:400">${esc(x.la)}</span></h3><p class="mono">${OM[x.o].es} · dominio ${box(x.id)}/4</p><p class="hook">${esc(x.g)}</p><button class="btn pri" data-next="1">Siguiente</button></div>`;
   $(mode==='hoy'?'#v-hoy':'#v-estudiar').innerHTML=h+'</div>';
 }
+let AUTO=0;
 function answer(id){
   if(Q.done)return;
   Q.done=true;Q.pick=id;ses.n++;
@@ -232,7 +235,10 @@ function answer(id){
   if(Q.photo&&Q.sp)Q.msg=maybeUnlock();
   srsGrade(Q.key||(Q.gen?'g:'+Q.gen:Q.sp?'s:'+Q.sp.id:'f:'+Q.f.id),ok);
   save();paintHead();vEst();
-  const b=$('[data-next]');if(b)b.scrollIntoView({block:'nearest'});
+  try{navigator.vibrate&&navigator.vibrate(ok?18:[40,50,40])}catch(e){}
+  const q0=Q;
+  if(ok&&autoOn()&&!Q.msg){clearTimeout(AUTO);AUTO=setTimeout(()=>{if(Q===q0&&Q.done){newQ();vEst();window.scrollTo(0,0)}},950)}
+  else{const b=$('[data-next]');if(b)b.scrollIntoView({block:'nearest'})}
 }
 
 /* --- navegación --- */
@@ -250,7 +256,7 @@ let cur='';
 function go(v){
   if(v==='pendiente')v='plan';
   if(!VIEWS[v])v='hoy';
-  cur=v;
+  cur=v;document.body.classList.toggle('compact',v==='hoy'||v==='estudiar');
   for(const k in VIEWS)$('#v-'+k).hidden=k!==v;
   document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   VIEWS[v]();window.scrollTo(0,0);
@@ -269,7 +275,7 @@ document.addEventListener('click',e=>{
   else if(d.mode){mode=d.mode;Q=null;CD=null;vEst();window.scrollTo(0,0)}
   else if(d.export){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='tiburones-progreso.json';a.click()}
   else if(d.a)answer(d.a);
-  else if(d.next){newQ();vEst();window.scrollTo(0,0)}
+  else if(d.next){clearTimeout(AUTO);newQ();vEst();window.scrollTo(0,0)}
   else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{lvl:'easy',scope:'auto',unl:4,npd:10,names:'es'}};save();armed=false;paintHead();vProg()}}
 });
 document.addEventListener('input',e=>{if(e.target.id==='ans'){hardSearch();return}

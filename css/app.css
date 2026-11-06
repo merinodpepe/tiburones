@@ -177,3 +177,30 @@ a{color:var(--acc)}
 .obar>div{height:10px;background:color-mix(in srgb,currentColor 12%,transparent);border-radius:6px;overflow:hidden}
 .obar i{display:block;height:100%;background:hsl(var(--h,200) 60% 50%)}
 .obar b{text-align:right;font-size:12px}
+
+/* ===== diseño: pantalla de pregunta, ajustes, nav ===== */
+.hr{display:flex;align-items:center;gap:8px}
+.gear{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.gear svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.sel{min-height:44px;padding:0 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:16px}
+.stline{margin:0 0 10px;font:500 13px/1.3 var(--f-mono);color:var(--mute)}.stline b{color:var(--ink)}
+.set{margin-bottom:16px}
+body.compact .top{padding-block:10px 6px}
+body.compact .kick{display:none}
+body.compact h1{font-size:30px;margin:0}
+body.compact .logo{height:48px;margin:0;filter:none}
+body.compact .prog{display:none}
+body.compact .strip{height:5px;margin-top:8px}
+body.compact main h2{display:none}
+.qcard{padding:12px}
+.qcard .big{max-height:min(52vh,420px);height:auto;aspect-ratio:4/3;object-fit:cover;margin-bottom:12px}
+.qcard .q{font-size:20px;margin-bottom:12px}
+.opt{padding:16px 18px;font-size:18px;min-height:56px}
+.opt.ok{animation:pop .35s ease}
+.opt.bad{animation:shake .38s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.opt.ok,.opt.bad{animation:none}}
+nav button{font-size:11px;gap:2px}
+nav button svg{width:24px;height:24px}
+nav button[aria-current="page"]{font-weight:700;box-shadow:0 4px 14px -6px var(--acc)}
