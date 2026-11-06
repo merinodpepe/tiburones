@@ -1,5 +1,5 @@
-const V='tiburones-v12';
-const CORE=['./','index.html','css/app.css','js/data.js','js/sil.js','js/app.js','js/learn.js','data/species.json','manifest.webmanifest','img/icon.svg','img/icon-192.png','img/icon-512.png'];
+const V='tiburones-v13';
+const CORE=['./','index.html','css/app.css','js/data.js','js/sil.js','js/app.js','js/learn.js','data/species.json','manifest.webmanifest','img/icon.svg','img/logo.svg','img/icon-192.png','img/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
