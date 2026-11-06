@@ -4,7 +4,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const OM=Object.fromEntries(O.map(o=>[o.id,o])), FM=Object.fromEntries(F.map(x=>[x.id,x]));
 let S={boxes:{},plan:{},sp:{},spb:{},set:{lvl:'easy',scope:'auto',unl:4}};
 try{Object.assign(S,JSON.parse(localStorage.getItem('pf-tiburones-v1')||'{}'))}catch(e){}
-S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10},S.set||{});S.srs=S.srs||{};S.hist=S.hist||{};S.day=S.day||{d:0,n:0};
+S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10,names:'es'},S.set||{});S.srs=S.srs||{};S.hist=S.hist||{};S.day=S.day||{d:0,n:0};
 const save=()=>{try{localStorage.setItem('pf-tiburones-v1',JSON.stringify(S))}catch(e){}};
 const box=id=>S.boxes[id]||0;
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -26,8 +26,9 @@ const PM=()=>Object.fromEntries(PARTS.map(p=>[p.id,p]));
 const partFig=p=>p?`<figure class="part"><img src="${esc(p.file)}" alt="${esc(p.t)}" loading="lazy"><figcaption><b>${esc(p.t)}</b><br>${esc(p.d)}<br><a class="cr" href="${esc(p.url)}" target="_blank" rel="noopener">foto: ${esc((p.author||'').slice(0,40))} · ${esc(p.license)}</a></figcaption></figure>`:'';
 const IUCN={'critically endangered':'CR','endangered':'EN','vulnerable':'VU','near threatened':'NT','least concern':'LC','data deficient':'DD'};
 const iu=x=>IUCN[(x.iucn||'').toLowerCase()]||'';
-const cname=x=>x.n;
-const nmS=x=>`<b><i>${esc(x.n)}</i></b>`;
+const nameEs=()=>(S.set.names||'es')==='es';
+const cname=x=>nameEs()&&x.es?x.es:x.n;
+const nmS=x=>nameEs()&&x.es?`<b>${esc(x.es)}</b> <span class="la">${esc(x.n)}</span>`:`<b><i>${esc(x.n)}</i></b>`;
 function initSp(){
   SPF={};SPM={};
   SP.forEach(x=>{(SPF[x.f]=SPF[x.f]||[]).push(x);SPM[x.id]=x});
@@ -169,7 +170,7 @@ const lvlBar=()=>{const p=vpool(),m=p.filter(x=>(S.spb[x.id]||0)>=3).length;retu
 function hardSearch(){
   const t=($('#ans')||{value:''}).value.trim().toLowerCase(),el=$('#ares');if(!el||Q.done)return;
   if(t.length<2){el.innerHTML='';return}
-  el.innerHTML=SP.filter(x=>(x.n+' '+x.es+' '+x.en).toLowerCase().includes(t)).slice(0,8).map(x=>`<button class="opt" data-a="${x.id}">${esc(x.n)}</button>`).join('')||'<p class="mono">Sin resultados</p>';
+  el.innerHTML=SP.filter(x=>(x.n+' '+x.es+' '+x.en).toLowerCase().includes(t)).slice(0,8).map(x=>`<button class="opt" data-a="${x.id}">${esc(cname(x))}</button>`).join('')||'<p class="mono">Sin resultados</p>';
 }
 function newQ(x0){
   if(mode==='hoy'&&!x0)return newHoyQ();
@@ -269,11 +270,11 @@ document.addEventListener('click',e=>{
   else if(d.export){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='tiburones-progreso.json';a.click()}
   else if(d.a)answer(d.a);
   else if(d.next){newQ();vEst();window.scrollTo(0,0)}
-  else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{lvl:'easy',scope:'auto',unl:4,npd:10}};save();armed=false;paintHead();vProg()}}
+  else if(d.reset){if(!armed){armed=true;b.textContent='¿Seguro? Pulsa otra vez'}else{S={boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{lvl:'easy',scope:'auto',unl:4,npd:10,names:'es'}};save();armed=false;paintHead();vProg()}}
 });
 document.addEventListener('input',e=>{if(e.target.id==='ans'){hardSearch();return}
   if(e.target.id==='q'){qtext=e.target.value;searchRes()}});
 document.addEventListener('change',e=>{
-  if(e.target.id==='imp'){const f=e.target.files[0];if(f)f.text().then(t=>{try{const j=JSON.parse(t);if(!j||typeof j!=='object'||!j.boxes)throw 0;S=Object.assign({boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{}},j);S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10},S.set||{});save();paintHead();vProg();alert('Progreso importado')}catch(_){alert('Archivo no válido')}});return}
+  if(e.target.id==='imp'){const f=e.target.files[0];if(f)f.text().then(t=>{try{const j=JSON.parse(t);if(!j||typeof j!=='object'||!j.boxes)throw 0;S=Object.assign({boxes:{},plan:{},sp:{},spb:{},srs:{},hist:{},day:{d:0,n:0},set:{}},j);S.set=Object.assign({lvl:'easy',scope:'auto',unl:4,npd:10,names:'es'},S.set||{});save();paintHead();vProg();alert('Progreso importado')}catch(_){alert('Archivo no válido')}});return}
   if(e.target.dataset&&e.target.dataset.sp){S.sp[e.target.dataset.sp]=e.target.checked;save();paintHead();return}const t=e.target.dataset&&e.target.dataset.t;if(t){S.plan[t]=e.target.checked;save();count()}});
 Promise.all([fetch('data/species.json').then(r=>r.json()).catch(()=>[]),fetch('data/parts.json').then(r=>r.json()).catch(()=>[])]).then(([d,pp])=>{SP=d;PARTS=pp;initSp();initLearn();paintHead();go(location.hash.slice(1)||'hoy')});

@@ -77,9 +77,10 @@ function newHoyQ(){
   else newVerQ(SPM[id]);
   Q.key=k;Q.done=false;
 }
+const namesChip=()=>`<div class="row" style="margin-bottom:10px"><span class="mono">Nombres</span>${[['es','Español'],['lat','Científico']].map(([k,l])=>`<button class="chip" aria-pressed="${(S.set.names||'es')===k}" data-names="${k}">${l}</button>`).join('')}</div>`;
 function hoyHead(){
   const due=dueKeys().length,nw=Math.min(allowance(),newCands().length);
-  return `<h2>Hoy</h2><div class="stats3"><div><b>${due}</b><span>para repasar</span></div><div><b>${nw}</b><span>nuevas</span></div><div><b>${streak()}</b><span>días de racha</span></div></div>
+  return `<h2>Hoy</h2>${namesChip()}<div class="stats3"><div><b>${due}</b><span>para repasar</span></div><div><b>${nw}</b><span>nuevas</span></div><div><b>${streak()}</b><span>días de racha</span></div></div>
   <div class="row" style="margin-bottom:12px">${[['easy','Fácil · 3'],['mid','Medio · 6'],['hard','Difícil · buscar']].map(([k,l])=>`<button class="chip" aria-pressed="${S.set.lvl===k}" data-lvl="${k}">${l}</button>`).join('')}</div>`;
 }
 function vHoyDone(){
@@ -128,7 +129,7 @@ function openSheet(id){
   const x=SPM[id];if(!x)return;const f=FM[x.f],o=OM[f.o],like=lookalikes(x);
   showSheet(`<div class="oc" style="--h:${o.h}"><button class="btn sheet-x" data-close="1">Cerrar</button>
    ${x.img?`<img class="big" src="${esc(x.img.file)}" alt="${esc(cname(x)||x.n)}" style="max-height:340px">`:`<div class="neutral" style="max-width:300px;margin:0 auto 12px">${sil(f.s)}</div>`}
-   <h2 style="margin-top:0"><i>${esc(x.n)}</i></h2>
+   <h2 style="margin-top:0">${nameEs()&&x.es?esc(x.es):`<i>${esc(x.n)}</i>`}</h2>${nameEs()&&x.es?`<p class="la" style="font-size:18px">${esc(x.n)}</p>`:''}
    <div class="row" style="margin-bottom:10px">${iu(x)?`<span class="tag iu iu-${iu(x)}">IUCN ${iu(x)}</span>`:''}<span class="tag">${esc(f.es)}</span><span class="tag">${esc(o.es)}</span></div>
    <div class="card"><p class="mono">Clasificación</p>${kvRow('Filo','Chordata')}${kvRow('Clase','Chondrichthyes')}${kvRow('Orden',o.es)}${kvRow('Familia',f.la)}${kvRow('Género',x.g)}${kvRow('Especie',x.n.split(' ').slice(1).join(' '))}</div>
    <div class="card"><p class="mono">Hábitat y tamaño</p>${kvRow('Medio',x.hab||'sin dato')}${kvRow('Profundidad',x.dep||'sin dato')}${kvRow('Zona',x.zona||'sin dato')}${kvRow('Tamaño máx.',fmtLen(x.len))}${kvRow('Peso máx.',fmtKg(x.kg))}</div>
@@ -144,7 +145,7 @@ function openCmp(ids){
   const fams=[...new Set(L.map(x=>x.f))];
   showSheet(`<div><button class="btn sheet-x" data-close="1">Cerrar</button><h2 style="margin-top:0">Comparar</h2><p class="lede">En negrita y color, lo que las distingue.</p>
    <div class="cmp" style="--n:${L.length}">
-    ${L.map(x=>`<div class="cmp-h oc" style="--h:${OM[FM[x.f].o].h}" data-sheet="${x.id}">${x.img?`<img src="${esc(x.img.file)}" alt="${esc(cname(x)||x.n)}">`:`<div class="neutral">${sil(FM[x.f].s)}</div>`}<b><i>${esc(x.n)}</i></b></div>`).join('')}
+    ${L.map(x=>`<div class="cmp-h oc" style="--h:${OM[FM[x.f].o].h}" data-sheet="${x.id}">${x.img?`<img src="${esc(x.img.file)}" alt="${esc(cname(x)||x.n)}">`:`<div class="neutral">${sil(FM[x.f].s)}</div>`}<b>${esc(cname(x))}</b></div>`).join('')}
     ${rows.map(r=>{const d=diff(r);return L.map(x=>`<div class="cmp-c${d?' diff':''}"><span>${r[0]}</span>${esc(r[1](x))}</div>`).join('')}).join('')}
    </div>
    <div class="card" style="margin-top:14px"><p class="mono">${fams.length>1?'Rasgo clave de cada familia':'Misma familia'}</p>${fams.map(f=>`<p><b>${esc(FM[f].es)}</b>: ${esc(FM[f].g)}</p>`).join('')}</div></div>`);
@@ -159,7 +160,7 @@ function vProg(){
   const weak=Object.entries(S.srs).filter(([k,c])=>k[0]==='s'&&c.lap>0&&SPM[k.slice(2)]).sort((a,b)=>(b[1].lap-a[1].lap)||(a[1].i-b[1].i)).slice(0,8).map(e=>SPM[e[0].slice(2)]);
   const weakG=Object.entries(S.srs).filter(([k,c])=>k[0]==='g'&&c.lap>0&&GEN[k.slice(2)]).sort((a,b)=>b[1].lap-a[1].lap).slice(0,5).map(e=>e[0].slice(2));
   const acc=(()=>{let a=0,n=0;days.forEach(x=>{a+=x.h.a;n+=x.h.n});return n?Math.round(100*a/n):null})();
-  $('#v-plan').innerHTML=`<h2>Progreso</h2>
+  $('#v-plan').innerHTML=`<h2>Progreso</h2>${namesChip()}
    <div class="stats3"><div><b>${knownCount('f')}/${F.length}</b><span>familias</span></div><div><b>${knownCount('g')}/${GENL.length}</b><span>géneros</span></div><div><b>${spK}/${sp.length}</b><span>especies con foto</span></div></div>
    <div class="card"><p class="mono">Últimos 7 días${acc!==null?` · ${acc}% de aciertos`:''} · racha ${streak()}</p><div class="bars7">${days.map(x=>`<div><i style="height:${Math.round(100*x.h.n/mx)}%"></i><span>${x.h.n||''}</span><em>${wk[new Date(x.d*DAYMS).getUTCDay()]}</em></div>`).join('')}</div>
     <p class="mono" style="margin-top:10px">Nuevas por día</p><div class="row">${[5,10,20].map(n=>`<button class="chip" aria-pressed="${NPD()===n}" data-npd="${n}">${n}</button>`).join('')}</div></div>
@@ -177,6 +178,7 @@ document.addEventListener('click',e=>{
   if(s&&!e.target.closest('[data-close]')){openSheet(s.dataset.sheet);return}
   const c=e.target.closest('[data-cmp]');if(c){openCmp(c.dataset.cmp.split(','));return}
   if(e.target.closest('[data-close]')){closeSheet();return}
+  const nm=e.target.closest('[data-names]');if(nm){S.set.names=nm.dataset.names;save();Q=null;go(cur);return}
   const n=e.target.closest('[data-npd]');if(n){S.set.npd=+n.dataset.npd;save();vProg();return}
   const m=e.target.closest('[data-hoymore]');if(m){S.day.n=Math.max(0,S.day.n-5);save();Q=null;vEst();return}
   const g=e.target.closest('[data-gostudy]');if(g){setTimeout(()=>go('estudiar'),0)}
